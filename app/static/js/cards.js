@@ -878,7 +878,7 @@ function enviarSugestao(){
 
     const csrf = document.querySelector("[name=csrfmiddlewaretoken]").value;
 
-    fetch("/sugestao/enviar", {
+    fetch("/sugestao/enviar/", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -904,4 +904,72 @@ function enviarSugestao(){
     .catch(() => {
         mostrarAlerta("❌ Erro na comunicação com o servidor.")
     });
+}
+function exportarPDF(){
+
+    const elemento = document.querySelector(".board");
+
+    const opcoes = {
+        margin: 0.5,
+        filename: "kanban.pdf",
+        image: {type: "jpeg",quality: 0.98},
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "in",format: "a4", orientation: "landscape" }
+    }
+
+    html2pdf().set(opcoes).from(elemento).save();
+}
+
+document.getElementById("btnExportarPdf").addEventListener("click", function () {
+    document.getElementById("modalConfirmarPDF").style.display = "flex";
+});
+
+function fecharConfirmarPDF(){
+    document.getElementById("modalConfirmarPDF").style.display = "none";
+}
+
+async function confirmarExportacaoPDF(){
+
+    fecharConfirmarPDF();
+
+    const btn = document.getElementById("btnExportarPdf");
+
+    btn.disabled = true;
+    btn.innerText = "Gerando PDF... ⏳";
+
+    // 🔥 mostra o alerta primeiro
+    mostrarAlerta("📄 Gerando PDF... você pode continuar usando o Kanban normalmente 😉", "sucesso");
+
+    // 👇 ESSA LINHA É A CHAVE
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    try {
+        const response = await fetch("/exportar-pdf/");
+
+        if (!response.ok) {
+            throw new Error("Erro ao gerar PDF");
+        }
+
+        const blob = await response.blob();
+
+        const url = window.URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "kanban.pdf";
+        document.body.appendChild(a);
+        a.click();
+
+        a.remove();
+        window.URL.revokeObjectURL(url);
+
+        mostrarAlerta("✅ PDF gerado com sucesso!", "sucesso");
+
+    } catch (error) {
+        console.error(error);
+        mostrarAlerta("❌ Erro ao gerar PDF", "erro");
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "📄 Exportar PDF";
+    }
 }

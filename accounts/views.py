@@ -10,6 +10,12 @@ from django.http import JsonResponse
 from .models import Card, Profile
 from django.contrib import messages
 from datetime import datetime,timedelta
+from django.core.mail import EmailMultiAlternatives
+from reportlab.lib.pagesizes import A4
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from django.utils.timezone import now
+from weasyprint import HTML
 import json
 
 
@@ -244,35 +250,131 @@ def criar_card_global(request):
 @csrf_exempt
 def enviar_sugestao(request):
     if request.method == "POST":
-        data = json.loads(request.body)
-        
-        nome = data.get("nome")
-        email = data.get("email")
-        tipo = data.get("tipo")
-        descricao = data.get("descricao")
-        
-        assunto = f"[KANBAN] {tipo} - {nome}"
+        try:
+            data = json.loads(request.body)
 
-        
-        mensagem = f"""
-Nova sugestão recebida:
+            nome = data.get("nome")
+            email = data.get("email")
+            tipo = data.get("tipo")
+            descricao = data.get("descricao")
 
-👤 Nome: {nome}
-📧 Email: {email}
-📌 Tipo: {tipo}
+            assunto = f"[KANBAN] {tipo} - {nome}"
 
-📝 Descrição:
-{descricao}
-"""
+            mensagem = f"""
+                Nova sugestão recebida:
 
-        send_mail(
-            subject=assunto,
-            message=mensagem,
-            from_email=None,
-            recipient_list=["keven.lucas00@hotmail.com"],
-            fail_silently=False,
-        )
+                👤 Nome: {nome}
+                📧 Email: {email}
+                📌 Tipo: {tipo}
 
-        return JsonResponse({"status": "ok"})
+                📝 Descrição:
+                {descricao}
+                """
 
-    return JsonResponse({"status": "erro"})
+            mensagem_html = f"""
+                <div style="font-family: Arial, sans-serif; background:#f4f6f8; padding:20px;">
+                    <div style="max-width:600px; margin:auto; background:#ffffff; border-radius:12px; padding:20px; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
+                        
+                        <h2 style="color:#2563eb; margin-bottom:10px;">💡 Nova sugestão recebida</h2>
+
+                        <p style="color:#555;">Você recebeu uma nova mensagem pelo sistema Kanban.</p>
+
+                        <hr style="margin:20px 0; border:none; border-top:1px solid #eee;">
+
+                        <p><strong>👤 Nome:</strong> {nome}</p>
+                        <p><strong>📧 Email:</strong> {email}</p>
+                        <p><strong>📌 Tipo:</strong> {tipo}</p>
+
+                        <div style="margin-top:20px;">
+                            <strong>📝 Descrição:</strong>
+                            <div style="background:#f9fafb; padding:15px; border-radius:8px; margin-top:8px; color:#333;">
+                                {descricao}
+                            </div>
+                        </div>
+
+                        <hr style="margin:25px 0; border:none; border-top:1px solid #eee;">
+
+                        <p style="font-size:12px; color:#999;">
+                            Enviado automaticamente pelo sistema Kanban
+                        </p>
+
+                    </div>
+                </div>
+                """
+            
+            email_msg = EmailMultiAlternatives(
+                subject=assunto,
+                body=mensagem_html,
+                from_email="suportekanban@outlook.com",
+                to=["keven.lucas00@hotmail.com"],
+                reply_to=[email],
+            )
+            
+            email_msg.attach_alternative(mensagem_html,"text/html")
+            email_msg.send()
+            
+            return JsonResponse({"status":"ok"})
+    
+        except Exception as e:
+                print("ERRO:", e)
+                return JsonResponse({"status": "erro", "msg": str(e)})
+            
+@login_required
+def exportar_pdf(request):
+    cards = Card.objects.filter(user=request.user)
+
+    hoje = now().date()
+    limite_proximo = hoje + timedelta(days=3)
+
+    colunas = {}
+
+    for card in cards:
+        nome = card.coluna
+
+        if nome not in colunas:
+            colunas[nome] = {
+                "total": 0,
+                "ok": 0,
+                "proximo": 0,
+                "vencido": 0,
+            }
+
+        colunas[nome]["total"] += 1
+
+        if card.data_vencimento:
+            vencimento = card.data_vencimento
+
+            if vencimento < hoje:
+                colunas[nome]["vencido"] += 1
+            elif vencimento <= limite_proximo:
+                colunas[nome]["proximo"] += 1
+            else:
+                colunas[nome]["ok"] += 1
+        else:
+            colunas[nome]["ok"] += 1  # fallback
+
+    # 🔥 converter para lista (IMPORTANTE pro template)
+    colunas_lista = []
+
+    for nome, dados in colunas.items():
+        colunas_lista.append({
+            "nome": nome,
+            "total": dados["total"],
+            "ok": dados["ok"],
+            "proximo": dados["proximo"],
+            "vencido": dados["vencido"],
+        })
+
+    html_string = render_to_string("pdf/kanban.html", {
+        "colunas": colunas_lista,
+        "now": now()
+    })
+
+    pdf = HTML(string=html_string).write_pdf()
+
+    response = HttpResponse(pdf, content_type="application/pdf")
+    response['Content-Disposition'] = 'attachment; filename="kanban.pdf"'
+
+    return response
+            
+           

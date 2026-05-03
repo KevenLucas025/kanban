@@ -878,13 +878,36 @@
 
          <div class="botoes-modal">
             <button class="btn-enviar-email" onclick="enviarSugestao()">
-                📤 Enviar
+                 Enviar
             </button>
 
             <button class="btn-cancelar-email" onclick="fecharSugestao()">
-                ❌ Cancelar
+                 Cancelar
             </button>
         </div>
+    </div>
+</div>
+
+<div id="modalConfirmarPDF" class="modal-confirmar">
+    <div class="box-confirmar">
+
+        <h3>⚠️ Gerar PDF</h3>
+
+        <p>
+            Gerar o PDF pode levar alguns segundos.<br><br>
+            Você pode continuar usando o Kanban normalmente 😉
+        </p>
+
+        <div class="acoes">
+            <button onclick="confirmarExportacaoPDF()" class="btn-confirmar-pdf">
+                Sim, gerar PDF
+            </button>
+
+            <button onclick="fecharConfirmarPDF()" class="btn-cancelar-pdf">
+                Cancelar
+            </button>
+        </div>
+
     </div>
 </div>
 

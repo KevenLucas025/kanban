@@ -15,7 +15,6 @@ from reportlab.lib.pagesizes import A4
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.utils.timezone import now
-from weasyprint import HTML
 import json
 
 
@@ -321,6 +320,7 @@ def enviar_sugestao(request):
             
 @login_required
 def exportar_pdf(request):
+    from weasyprint import HTML
     cards = Card.objects.filter(user=request.user)
 
     hoje = now().date()

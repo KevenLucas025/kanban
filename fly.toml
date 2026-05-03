@@ -1,8 +1,3 @@
-# fly.toml app configuration file generated for projetokanban on 2026-05-03T15:36:08-03:00
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
-
 app = 'projetokanban'
 primary_region = 'gru'
 console_command = '/code/manage.py shell'
@@ -11,6 +6,9 @@ console_command = '/code/manage.py shell'
 
 [env]
   PORT = '8000'
+
+[processes]
+app = "gunicorn config.wsgi:application --bind 0.0.0.0:8000"
 
 [http_service]
   internal_port = 8000

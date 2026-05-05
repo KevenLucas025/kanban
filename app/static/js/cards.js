@@ -826,11 +826,17 @@ function exportarExcel(){
     });
 
     if (dados.length == 0){
+<<<<<<< HEAD
         mostrarAlerta("Nenhum card encontrado para exportar.");
         return;
     }
 
 
+=======
+        mostrarAlerta("Nenhum card encontrado para exportar.")
+    }
+
+>>>>>>> db5648e56da9144a3b68fae156b8402cf6db1205
     // cria a planilha
     const ws = XLSX.utils.json_to_sheet(dados);
 

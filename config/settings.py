@@ -1,5 +1,6 @@
 from pathlib import Path
 from dotenv import load_dotenv
+from typing import cast
 import os
 import dj_database_url
 
@@ -31,13 +32,10 @@ SECRET_KEY = 'django-insecure-llg7n9of+7^^8lshbhm-s4qwm-8_-ucnielt=c=lcpv=frb)=e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = []
 
 LOGIN_URL = '/accounts/login/'
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://projetokanban.fly.dev"
-]
 
 # Application definition
 
@@ -82,14 +80,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
-
-
-DATABASES = {
-    "default": dj_database_url.config(
-        default=os.getenv("DATABASE_URL")
-    )
+DATABASES: dict[str, dict[str, object]] = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
+
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if DATABASE_URL:
+    DATABASES['default'] = cast(
+        dict[str, object],
+        dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True
+        )
+    )
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -136,3 +144,12 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+if not DEBUG:
+    X_FRAME_OPTIONS = 'DENY'
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    # SECURE_SSL_REDIRECT = True
+    # SECURE_HSTS_SECONDS = 3600

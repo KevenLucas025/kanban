@@ -37,6 +37,8 @@ ALLOWED_HOSTS = ["*"]
 LOGIN_URL = '/accounts/login/'
 
 
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -139,6 +141,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / "app/static",
 ]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

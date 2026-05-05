@@ -826,8 +826,10 @@ function exportarExcel(){
     });
 
     if (dados.length == 0){
-        mostrarAlerta("Nenhum card encontrado para exportar.")
+        mostrarAlerta("Nenhum card encontrado para exportar.");
+        return;
     }
+
 
     // cria a planilha
     const ws = XLSX.utils.json_to_sheet(dados);

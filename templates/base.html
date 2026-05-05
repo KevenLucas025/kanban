@@ -19,7 +19,7 @@
     }
     body{
         background: linear-gradient(135deg, #0f172a, #1e293b, #334155);
-        height: 100vh;
+        min-height: 100vh;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -132,8 +132,9 @@
         display:flex;
         justify-content:space-between;
         align-items:center;
-        margin-bottom:30px;
+        flex-wrap: wrap;
         color:white;
+        gap: 10px;
     }
 
     .user-area{
@@ -197,16 +198,22 @@
         border-radius: 50%;
     }
     .user-menu{
-        position: relative;
+        display: flex;
+        flex-direction: column; /* 👈 empilha */
+        align-items: flex-end;  /* 👈 alinha à direita */
+        gap: 10px;
     }
     .dropdown-menu{
         position: absolute;
-        right: 0;
-        top: 60px;
-        width: 220px;
+        right: clamp(10px, 2vw, 20px);
+        top: clamp(85px, 6vh, 50px);
+
+        width: clamp(180px, 22vw, 240px);
+
         background: white;
         border-radius: 12px;
-        box-shadow: 0 15px 30px rgba(0,0, 0, 0.15);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+
         display: none;
         overflow: hidden;
         z-index: 999;
@@ -778,10 +785,13 @@
     .filtro-data{
         display:flex;
         gap:14px;
-        position: relative;
-        top: 50px;
-    }
+        margin-left: auto;
 
+        transform: translate(
+            clamp(-290px, -17vw, 0px),
+            clamp(30px, 5vh, 60px)
+        );
+    }
     .campo-data label{
         color:white;
         font-size:14px;
@@ -868,22 +878,20 @@
         color:#6b7280;
     }
     .btn-menu-lateral {
-        position: fixed;
-        left: -100px;
-        top: 20px;
+        position: relative;
+        left: -6.5vw;
+        top: -10px;
+        z-index: 1;
 
-        background: #1f2937; /* cinza escuro moderno */
+        background: #1f2937;
         color: white;
         border: none;
         padding: 10px 14px;
         border-radius: 10px;
         font-size: 20px;
         cursor: pointer;
-        transition: 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
     }
+    
 
     .btn-menu-lateral:hover {
         background: #111827;
@@ -977,6 +985,12 @@
         float:right;
         color:#60a5fa;
     }
+    .topo-esquerda{
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
 
     /* faixa vertical atrás do botão */
     .topo-esquerda::before {
@@ -993,11 +1007,7 @@
         z-index: 0;
     }
 
-    /* garante que o conteúdo fique acima da faixa */
-    .btn-menu-lateral { 
-        position: relative;
-        z-index: 1;
-    }
+   
     .main-content{
         margin-left: 80px;
         width: calc(100% - 80px);
@@ -1066,17 +1076,20 @@
     .label-total-cards{
         background: rgba(255,255,255,0.12);
         color: white;
-        padding: 10px 18px;
-        border-radius: 12px;
-        font-size: 15px;
+        padding: 8px 14px;
+        border-radius: 10px;
+        font-size: 14px;
         font-weight: 600;
         backdrop-filter: blur(8px);
         box-shadow: 0 8px 20px rgba(0,0,0,.18);
+
         display: inline-flex;
         align-items: center;
-        position: relative;
-        top: 90px;
-        right: -1320px;
+
+        margin-left: auto;
+
+        transform: translate(clamp(0px, 140vw, 1150px), 50px);
+
     }
     /*Ajusta o espaço do número e da palavra*/
     #totalCardsNumero{
@@ -1383,6 +1396,16 @@
     .btn-cancelar-pdf:hover {
         background: #d1d5db;
     }
+    #bloqueioMobile {
+        position: fixed;
+        inset: 0;
+        background: #0f172a;
+        z-index: 999999;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        }
 
             
                                             

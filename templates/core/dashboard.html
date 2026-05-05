@@ -9,8 +9,6 @@
     {% include 'menu_lateral.html' %}
 
     <header class="topbar">
-
-    
         
     <!-- LADO ESQUERDO -->
     <div class="topo-esquerda">
@@ -24,9 +22,9 @@
             ☰
         </button>
 
-        <div class="label-total-cards">
+    <div class="label-total-cards">
             📌 <span id="totalCardsNumero">{{ total_cards }}</span> cards encontrados
-        </div>
+    </div>
 
         <!-- FILTRO -->
         <form class="filtro-data" id="formFiltroData" method="GET">
@@ -74,8 +72,9 @@
                     {{ request.user.username|slice:":1"|upper }}
                 {% endif %}
             </div>
-
         </div>
+
+        
 
         <div class="dropdown-menu" id="menuPerfil">
 

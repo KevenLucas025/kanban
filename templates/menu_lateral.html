@@ -1,0 +1,61 @@
+<div class="offcanvas offcanvas-start" tabindex="-1" id="menuLateral">
+
+    <div class="offcanvas-header">
+
+        <h5 class="offcanvas-title">Menu</h5>
+
+        <button class="btn-fechar-menu" data-bs-dismiss="offcanvas">
+            ✕
+        </button>
+
+    </div>
+
+    <div class="offcanvas-body">
+
+        <!-- BOTÕES -->
+        <button class="btn btn-primary w-100 mb-2"
+            onclick="abrirNovoCardGlobal()">
+            ➕ Novo Card
+        </button>
+
+        <button class="btn btn-outline-light w-100 mb-2"
+            onclick="abrirFiltro()">
+            📅 Filtros
+        </button>
+
+        <button class="btn btn-outline-light w-100 mb-2" onclick="abrirBuscaCard()">
+            🔍 Buscar Card
+        </button>
+
+        <button class="btn btn-outline-success w-100 mb-2" onclick="exportarExcel()">
+            📤 Exportar Excel
+        </button>
+
+        <button id="btnExportarPdf" class="btn-exportar-pdf">
+        📄 Exportar PDF
+    </button>
+
+        <button class="btn btn-outline-info w-100 mb-2" onclick="abrirSugestao()">Sugestões</button>
+
+        <button class="btn btn-outline-danger w-100 mb-4"
+            onclick="sairSistema()">
+            🚪 Sair
+        </button>
+
+        <!-- RESUMO -->
+        <div class="card-menu-info">
+            <p>📌 Total: <strong>{{ total_cards }}</strong></p>
+            <p>⏳ Pendentes: <strong>{{ contador_colunas.PE }}</strong></p>
+            <p>🚀 Em andamento: <strong>{{ contador_colunas.EP }}</strong></p>
+            <p>⚠️ Vencidos: <strong>{{ vencidos }}</strong></p>
+            <p>🟡 Próximo ao vencimento: <strong>{{ proximos }}</strong></p>
+            <p>✅ Concluídos hoje: <strong>{{ concluidos_hoje }}</strong></p>
+        </div>
+
+        <div class="text-center text-muted mt-4">
+            <small>Kanban v1.0</small>
+        </div>
+
+    </div>
+
+</div>

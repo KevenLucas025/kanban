@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+<style>
+    body {
+        font-family: Arial;
+        padding: 30px;
+        background: #fff;
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .header h1 {
+        margin: 0;
+    }
+
+    .coluna {
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        page-break-inside: avoid;
+    }
+
+    .coluna h2 {
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
+
+    .linha {
+        font-size: 13px;
+        margin: 4px 0;
+    }
+
+    .ok { color: #16a34a; }
+    .proximo { color: #f59e0b; }
+    .vencido { color: #dc2626; }
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>📊 Relatório Kanban</h1>
+    <span>Gerado em {{ now|date:"d/m/Y H:i" }}</span>
+</div>
+
+{% for coluna in colunas %}
+    <div class="coluna">
+
+        <h2>📂 {{ coluna.nome }} ({{ coluna.total }})</h2>
+
+        <div class="linha ok">
+            🟢 No prazo: {{ coluna.ok }}
+        </div>
+
+        <div class="linha proximo">
+            🟡 Próximo ao vencimento: {{ coluna.proximo }}
+        </div>
+
+        <div class="linha vencido">
+            🔴 Vencido: {{ coluna.vencido }}
+        </div>
+
+    </div>
+{% endfor %}
+
+</body>
+</html>

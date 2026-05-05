@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Criar Conta{% endblock %}
+
+{% block content %}
+
+<div class="tela-login">
+
+    <h1>Criar Conta</h1>
+    <p>Cadastre-se no Kanban</p>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alerta {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" autocomplete="off">
+        {% csrf_token %}
+
+        <input 
+            type="text" 
+            name="nome_completo" 
+            placeholder="Nome Completo"
+            autocomplete="off">
+
+        <input type="text"
+               name="new_user"
+               placeholder="Usuário"
+               autocomplete="off">
+
+        <input type="email"
+               name="new_email"
+               placeholder="Email"
+               autocomplete="off"
+               class="{% if erro_campo == 'email' %}erro-input{% endif %}">
+
+        <div class="input-wrapper" style="position: relative;">
+            <input type="password"
+                   name="new_pass"
+                   placeholder="Senha"
+                   autocomplete="new-password"
+                   class="{% if erro_campo == 'senha' %}erro-input{% endif %}"
+                   style="margin-bottom: 15px;">
+            <i class="fa-solid fa-eye toggle-password" 
+               style="position: absolute; right: 60px; top: 24%; cursor: pointer; color: #666; font-size: 18px;"></i>
+        </div>
+
+        <div class="input-wrapper" style="position: relative;">
+            <input type="password"
+                   name="new_confirm"
+                   placeholder="Confirmar senha"
+                   autocomplete="new-password"
+                   class="{% if erro_campo == 'senha' %}erro-input{% endif %}"
+                   style="margin-bottom: 15px;">
+            <i class="fa-solid fa-eye toggle-password" 
+               style="position: absolute; right: 60px; top: 24%; cursor: pointer; color: #666; font-size: 18px;"></i>
+        </div>
+
+        <button type="submit">Cadastrar</button>
+    </form>
+
+    <a href="/" class="btn-login">Já possui conta? Entrar</a>
+
+</div>
+
+{% endblock %}

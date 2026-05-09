@@ -40,6 +40,18 @@
     <a href="/register/">Não possui conta? Criar agora</a>
 </div>
 
+<div id="bloqueioMobile" style="display:none;">
+  <div class="conteudo-bloqueio">
+    <h2>⚠️ Versão Desktop</h2>
+        <p>
+        Este sistema ainda não possui suporte para dispositivos móveis.
+        </p>
+        <p>
+        Acesse pelo computador para utilizar todas as funcionalidades.
+        </p>
+  </div>
+</div>
+
 <style>
     @keyframes shake {
         0%, 100% {transform: translateX(0);}
@@ -58,6 +70,11 @@
             setTimeout(() => container.remove(),500);      
         }
     }, 4000);
+
+  if (window.innerWidth <= 768) {
+    document.getElementById("bloqueioMobile").style.display = "flex";
+    document.body.style.overflow = "hidden";
+    }
 
 </script>
 

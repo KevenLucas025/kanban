@@ -240,73 +240,7 @@
 
         </div>
 
-        <!-- COLUNA -->
-        <div class="coluna lista-cards" data-coluna="CA">
-
-            <div class="topo-coluna">
-                <h2>❌ Cancelado <span>{{ contador_colunas.CA }}</span></h2>
-
-                <button class="btn-menu-lista" onclick="toggleMenuLista(this)">
-                    ⋮
-                </button>
-
-                <div class="menu-lista">
-                    <a href="javascript:void(0)" onclick="adicionarCard(this)">
-                        ➕ Adicionar Card
-                    </a>
-
-
-                    <a href="javascript:void(0)" onclick="excluirLista(this)">🗑️ Excluir Lista</a>
-                </div>
-            </div>
-
-            {% for card in cards %}
-                {% if card.coluna == "CA" %}
-                    <div class="card-task"
-                        data-id="{{ card.id }}"
-                        data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
-                        data-status="{{ card.status }}"
-                        data-coluna="{{ card.coluna }}">
-
-                        <div class="topo-card">
-                            <span class="status {{ card.status }}"></span>
-
-                            <span class="titulo-card">
-                                {{ card.titulo }}
-                            </span>
-                            <small class="data-card">
-                               📅  {{ card.criado_em|date:"d/m/Y" }}
-                            </small>
-
-                            <button class="btn-menu-card"
-                                onclick="toggleMenuCard(this)">
-                                ⋮
-                            </button>
-
-                            <div class="menu-card">
-
-                                <a href="javascript:void(0)" onclick="abrirDetalhesCard('{{ card.id }}')">
-                                    ℹ️ Detalhes
-                                </a>
-
-                                <a href="javascript:void(0)"
-                                onclick="renomearCard(this)">
-                                    ✏️ Renomear
-                                </a>
-
-                                <a href="javascript:void(0)"
-                                onclick="excluirCard(this)">
-                                    🗑️ Excluir
-                                </a>
-
-                            </div>
-
-                        </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
-
-        </div>
+        
 
         <!-- COLUNA -->
         <div class="coluna lista-cards" data-coluna="FF">
@@ -513,7 +447,77 @@
             {% endfor %}
 
         </div>
+
+        <!-- COLUNA -->
+        <div class="coluna lista-cards" data-coluna="CA">
+
+            <div class="topo-coluna">
+                <h2>❌ Cancelado <span>{{ contador_colunas.CA }}</span></h2>
+
+                <button class="btn-menu-lista" onclick="toggleMenuLista(this)">
+                    ⋮
+                </button>
+
+                <div class="menu-lista">
+                    <a href="javascript:void(0)" onclick="adicionarCard(this)">
+                        ➕ Adicionar Card
+                    </a>
+
+
+                    <a href="javascript:void(0)" onclick="excluirLista(this)">🗑️ Excluir Lista</a>
+                </div>
+            </div>
+
+            {% for card in cards %}
+                {% if card.coluna == "CA" %}
+                    <div class="card-task"
+                        data-id="{{ card.id }}"
+                        data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
+                        data-status="{{ card.status }}"
+                        data-coluna="{{ card.coluna }}">
+
+                        <div class="topo-card">
+                            <span class="status {{ card.status }}"></span>
+
+                            <span class="titulo-card">
+                                {{ card.titulo }}
+                            </span>
+                            <small class="data-card">
+                               📅  {{ card.criado_em|date:"d/m/Y" }}
+                            </small>
+
+                            <button class="btn-menu-card"
+                                onclick="toggleMenuCard(this)">
+                                ⋮
+                            </button>
+
+                            <div class="menu-card">
+
+                                <a href="javascript:void(0)" onclick="abrirDetalhesCard('{{ card.id }}')">
+                                    ℹ️ Detalhes
+                                </a>
+
+                                <a href="javascript:void(0)"
+                                onclick="renomearCard(this)">
+                                    ✏️ Renomear
+                                </a>
+
+                                <a href="javascript:void(0)"
+                                onclick="excluirCard(this)">
+                                    🗑️ Excluir
+                                </a>
+
+                            </div>
+
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+        </div>
 </div>
+
+
 
     <!-- MODAIS -->
     <div id="modalCrop" class="modal-crop" >

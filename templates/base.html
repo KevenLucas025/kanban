@@ -1400,14 +1400,42 @@
         color: white;
     }
     #bloqueioMobile {
-    position: fixed;
-    inset: 0;
-    background: #0f172a;
-    z-index: 999999;
+        position: fixed;
+        inset: 0;
+        background: #0f172a;
+        z-index: 999999;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        }
+        .cabecalho-descricao{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:12px;
+    }
+
+    .btn-editar-descricao{
+        border:none;
+        background:none;
+        cursor:pointer;
+        font-size:18px;
+        transition:0.2s;
+    }
+
+    .btn-editar-descricao:hover{
+        transform:scale(1.1);
+    }
+
+    .textarea-descricao{
+        width:100%;
+        min-height:120px;
+        resize:vertical;
+        padding:12px;
+        border:1px solid #d1d5db;
+        border-radius:10px;
+        font-size:14px;
     }
 
             

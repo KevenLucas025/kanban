@@ -826,14 +826,39 @@
 
         <hr>
 
-        <!-- Descrição -->
-        <div class="corpo-detalhes">
-            <p class="label">📄 Descrição</p>
-            <p class="descricao-texto">
-                Nenhuma descrição adicionada.
-            </p>
-        </div>
 
+        <div class="corpo-detalhes">
+            <div class="cabecalho-descricao">
+        <p class="label">📄 Descrição</p>
+            <button class="btn-editar-descricao"
+                    onclick="editarDescricaoCard()">
+                ✏️
+            </button>
+        </div>
+        <!-- Modo visualização -->
+        <p id="descricaoTexto" class="descricao-texto">
+            Nenhuma descrição adicionada.
+        </p>
+        <!-- Descrição -->
+        <div id="areaEdicaoDescricao" style="display:none;">
+        <textarea 
+            id="detalhesDescricao"
+            rows="5"
+            class="textarea-descricao"
+            placeholder="Digite a descrição aqui...."
+        ></textarea>
+
+        <div class="acoes-modal" style="margin-top:10px;">
+            <button class="btn-cancelar"
+                    onclick="cancelarEdicaoDescricao()">
+                Cancelar
+            </button>
+
+            <button class="btn-salvar"
+                    onclick="salvarDescricaoCard()">
+                Salvar
+            </button>
+        </div>
     </div>
 </div>
 

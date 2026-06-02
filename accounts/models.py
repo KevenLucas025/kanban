@@ -42,6 +42,11 @@ class Card(models.Model):
     titulo = models.CharField(
         max_length=200
     )
+    
+    descricao = models.CharField(
+        blank=True,
+        null=True
+    )
 
     coluna = models.CharField(
         max_length=100
@@ -58,6 +63,7 @@ class Card(models.Model):
         null=True,
         blank=True
     )
+    
     
     def status(self):
         if not self.data_vencimento:

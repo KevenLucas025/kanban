@@ -484,23 +484,9 @@ document.getElementById("formFiltroData").addEventListener("submit", function(e)
     const inputDe = document.getElementById("dataDe");
     const inputAte = document.getElementById("dataAte");
 
-    let de = inputDe.value;
-    let ate = inputAte.value;
-
     if(de === "" && ate === ""){
-        
-        const hoje = new Date();
-
-        const ano = hoje.getFullYear();
-        const mes = String(hoje.getMonth() + 1).padStart(2,"0");
-        const dia = String(hoje.getDate()).padStart(2,"0");
-
-        const primeiroDia = `${ano}-${mes}-01`;
-        const hojeFormatado = `${ano}-${mes}-${dia}`;
-
-        inputDe.value = primeiroDia;
-        inputAte.value = hojeFormatado;
-
+        e.preventDefault();
+        window.location.href = window.location.pathname;
         return;
     }
 
@@ -695,6 +681,8 @@ function buscarCard() {
 let cardEmDetalhes = null;
 
 function abrirDetalhesCard(id){
+
+    cardEmDetalhes = id;
 
     const card = document.querySelector(`[data-id="${id}"]`);
 
@@ -974,4 +962,68 @@ async function confirmarExportacaoPDF(){
         btn.disabled = false;
         btn.innerText = "📄 Exportar PDF";
     }
+}
+
+function salvarDescricaoCard(){
+
+    const descricao =
+        document.getElementById("detalhesDescricao").value.trim();
+
+    const csrf =
+        document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+    fetch(`/card/${cardEmDetalhes}/descricao/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrf
+        },
+        body: JSON.stringify({
+            descricao: descricao
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        if(data.status === "ok"){
+
+            document.getElementById("descricaoTexto").innerText =
+                descricao || "Nenhuma descrição adicionada.";
+
+            document.getElementById("descricaoTexto").style.display = "block";
+
+            document.getElementById("areaEdicaoDescricao").style.display = "none";
+
+            mostrarAlerta(
+                "✅ Descrição salva com sucesso",
+                "sucesso"
+            );
+        }
+
+    })
+    .catch(error => {
+        console.error(error);
+        mostrarAlerta("❌ Erro ao salvar descrição");
+    });
+}
+
+function editarDescricaoCard(){
+    const textoAtual = 
+        document.getElementById("descricaoTexto").innerText;
+
+    document.getElementById("detalhesDescricao").value = 
+    textoAtual === "Nenhuma descrição adicionada."
+    ? ""
+    : textoAtual;
+
+    document.getElementById("descricaoTexto").style.display = "none";
+    document.getElementById("areaEdicaoDescricao").style.display = "block";
+
+
+}
+function cancelarEdicaoDescricao(){
+
+    document.getElementById("descricaoTexto").style.display = "block";
+
+    document.getElementById("areaEdicaoDescricao").style.display = "none";
 }

@@ -377,4 +377,25 @@ def exportar_pdf(request):
 
     return response
             
-           
+@login_required
+def salvar_descricao_card(request, id):
+
+    if request.method == "POST":
+
+        data = json.loads(request.body)
+
+        card = Card.objects.get(
+            id=id,
+            user=request.user
+        )
+
+        card.descricao = data.get("descricao", "")
+        card.save()
+
+        return JsonResponse({
+            "status": "ok"
+        })
+
+    return JsonResponse({
+        "status": "erro"
+    })

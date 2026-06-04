@@ -128,6 +128,7 @@
                     <div class="card-task"
                         data-id="{{ card.id }}"
                         data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
+                        data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
                         data-status="{{ card.status }}"
                         data-coluna="{{ card.coluna }}">
                          
@@ -197,6 +198,7 @@
                     <div class="card-task"
                         data-id="{{ card.id }}"
                         data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
+                        data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
                         data-status="{{ card.status }}"
                         data-coluna="{{ card.coluna }}">
 
@@ -267,6 +269,7 @@
                     <div class="card-task"
                         data-id="{{ card.id }}"
                         data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
+                        data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
                         data-status="{{ card.status }}"
                         data-coluna="{{ card.coluna }}">
 
@@ -335,6 +338,7 @@
                     <div class="card-task"
                         data-id="{{ card.id }}"
                         data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
+                        data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
                         data-status="{{ card.status }}"
                         data-coluna="{{ card.coluna }}">
 
@@ -404,6 +408,7 @@
                     <div class="card-task"
                         data-id="{{ card.id }}"
                         data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
+                        data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
                         data-status="{{ card.status }}"
                         data-coluna="{{ card.coluna }}">
 
@@ -473,6 +478,7 @@
                     <div class="card-task"
                         data-id="{{ card.id }}"
                         data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
+                        data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
                         data-status="{{ card.status }}"
                         data-coluna="{{ card.coluna }}">
 
@@ -820,6 +826,10 @@
             <span id="detalheVencimento">05/05/2026</span>
         </p>
         <p class="info-secundaria">
+            <strong>✅ Data de Conclusão:</strong>
+            <span id="detalheConclusao">Ainda não concluído</span>
+        </p>
+        <p class="info-secundaria">
             <strong>🔥Prioridade:</strong>
             <span id="detalhePrioridade">Alta</span>
         </p>
@@ -858,6 +868,8 @@
                     onclick="salvarDescricaoCard()">
                 Salvar
             </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -940,14 +952,5 @@
 </div>
 
 
-<script src="{% static 'js/kanban.js' %}"></script>
-<script src="{% static 'js/cards.js' %}"></script>
-<script src="{% static 'js/menu.js' %}"></script>
-<script src="{% static 'js/perfil.js' %}"></script>
-<script src="{% static 'js/modal.js' %}"></script>
-
-<script>
-    window.TEMA_USUARIO = "{{ request.user.profile.tema }}";
-</script>
 
 {% endblock %}

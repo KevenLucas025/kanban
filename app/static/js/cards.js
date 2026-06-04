@@ -690,6 +690,16 @@ function abrirDetalhesCard(id){
     const dataCriacao = card.querySelector(".data-card").innerText.replace("📅 ", "");
     const vencimento = card.dataset.vencimento;
 
+    const conclusaoData = card.getAttribute("data-conclusao");
+    const coluna = card.dataset.coluna;
+
+    
+    const conclusao =
+        coluna === "CO"
+            ? (conclusaoData || "Concluído (sem data registrada)")
+            : (conclusaoData || "Ainda não concluído");
+   
+
     // 👉 converter datas
     const hoje = new Date();
 
@@ -713,6 +723,8 @@ function abrirDetalhesCard(id){
     document.getElementById("detalheTitulo").innerText = titulo;
     document.getElementById("detalheData").innerText = dataCriacao;
     document.getElementById("detalheVencimento").innerText = vencimento;
+    console.log(document.getElementById("detalheConclusao"));
+    document.getElementById("detalheConclusao").innerText = conclusao;
 
     // 👇 AQUI entra o novo status
     document.getElementById("detalheStatus").innerText = statusPrazo;
@@ -728,7 +740,9 @@ function fecharDetalhesCard() {
 
 // Esta função APENAS abre o modal para você escolher a opção
 function abrirFiltro(){
-    // Primeiro, fecha o menu lateral do Bootstrap se ele estiver aberto
+
+    console.log("clicou filtro");
+
     const menuLateral = document.getElementById("menuLateral");
     if (menuLateral) {
         const bsOffcanvas = bootstrap.Offcanvas.getInstance(menuLateral);
@@ -737,12 +751,11 @@ function abrirFiltro(){
         }
     }
 
-    // Abre o modal de filtro
     const modal = document.getElementById("modalFiltro");
+
+    console.log(modal);
+
     modal.style.display = "flex";
-    
-    // Garante que o select esteja limpo e pronto para uso
-    document.getElementById("tipoFiltro").focus();
 }
 
 function fecharFiltro(){
@@ -1026,4 +1039,28 @@ function cancelarEdicaoDescricao(){
     document.getElementById("descricaoTexto").style.display = "block";
 
     document.getElementById("areaEdicaoDescricao").style.display = "none";
+}
+function somarConcluidosHoje(qtd = 1) {
+    const span = document.getElementById("concluidosHojeNumero");
+    if (span) {
+        let atual = parseInt(span.innerText.trim()) || 0;
+        span.innerText = atual + qtd;
+    }
+}
+
+function diminuirConcluidosHoje(qtd = 1) {
+    const span = document.getElementById("concluidosHojeNumero");
+    if (span) {
+        let atual = parseInt(span.innerText.trim()) || 0;
+        span.innerText = Math.max(0, atual - qtd);
+    }
+}
+
+// 🔥 FUNÇÃO GLOBAL: Chame esta função onde o seu script de arrastar atualiza o banco
+function verificarMudancaColunaMenu(colunaOrigem, colunaDestino) {
+    if (colunaDestino === "CO" && colunaOrigem !== "CO") {
+        somarConcluidosHoje(1);
+    } else if (colunaOrigem === "CO" && colunaDestino !== "CO") {
+        diminuirConcluidosHoje(1);
+    }
 }

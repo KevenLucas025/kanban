@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from datetime import date
+from django.db.models.signals import pre_save
 
 
 class Profile(models.Model):
@@ -31,6 +32,7 @@ def criar_profile(sender, instance, created, **kwargs):
 def salvar_profile(sender, instance, **kwargs):
     instance.profile.save()
     
+
     
     
 class Card(models.Model):
@@ -63,6 +65,10 @@ class Card(models.Model):
         null=True,
         blank=True
     )
+    data_conclusao = models.DateField(
+        null=True,
+        blank=True
+    )
     
     
     def status(self):
@@ -81,3 +87,20 @@ class Card(models.Model):
 
     def __str__(self):
         return self.titulo
+    
+@receiver(pre_save, sender=Card)
+def atualizar_data_conclusao(sender, instance, **kwargs):
+
+    if instance.id:
+        card_antigo = Card.objects.get(pk=instance.id)
+
+        if instance.coluna == "CO" and card_antigo.coluna != "CO":
+            instance.data_conclusao = date.today()
+
+        elif instance.coluna != "CO" and card_antigo.coluna == "CO":
+            instance.data_conclusao = None
+
+    else:
+        if instance.coluna == "CO":
+            instance.data_conclusao = date.today()
+    

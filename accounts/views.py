@@ -20,8 +20,8 @@ import json
 
 def login_view(request):
     if request.method == 'POST':
-        usuario_input = request.POST.get('login_user','').strip()
-        senha_input = request.POST.get('login_pass','').strip()
+        usuario_input = request.POST.get('username','').strip()
+        senha_input = request.POST.get('password','').strip()
         
         
         # 1. Verificação de campos vazios
@@ -398,4 +398,39 @@ def salvar_descricao_card(request, id):
 
     return JsonResponse({
         "status": "erro"
+    })
+    
+@login_required
+@csrf_protect
+def alterar_wallpaper(request):
+    if request.method == 'POST':
+        
+        data = json.loads(request.body)
+        imagem = data.get("imagem")
+        
+        wallpapers_permitidos = [
+            "montanha.jpg",
+            "lago.jpg",
+            "floresta.jpg",
+            "cidade.jpg",
+        ]
+        
+        if imagem not in wallpapers_permitidos:
+            return JsonResponse({
+                "status": "erro",
+                "msg": "Wallpaper inválido."
+            })
+            
+        profile, created = Profile.objects.get_or_create(
+            user=request.user
+        )
+        
+        profile.wallpaper = imagem
+        profile.save()
+        
+        return JsonResponse({
+            "status": "ok"
+        })
+    return JsonResponse({
+        "status": "ok"
     })

@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (login_view, register_view,upload_foto,remover_foto,logout_view,
                     criar_card,renomear_card,excluir_card,excluir_lista,criar_card_global,mover_card,
-                    enviar_sugestao,exportar_pdf,salvar_descricao_card)
+                    enviar_sugestao,exportar_pdf,salvar_descricao_card,alterar_wallpaper)
 
 urlpatterns = [
     path('', login_view, name='login'),
@@ -22,6 +22,8 @@ urlpatterns = [
     path("card/criar-global/", criar_card_global, name="criar_card_global"),
     path("sugestao/enviar/",enviar_sugestao,name="enviar_sugestao"),
     path("exportar-pdf/", exportar_pdf, name="exportar_pdf"),
+    
+    path("alterar-wallpaper/",alterar_wallpaper, name="alterar-wallpaper"),
     
     
 ]

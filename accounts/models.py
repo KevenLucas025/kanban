@@ -17,6 +17,11 @@ class Profile(models.Model):
         blank=True,
         null=True
     )
+    
+    wallpaper = models.CharField(
+        max_length=100,
+        default="montanha.jpg"
+    )
 
     def __str__(self):
         return self.user.username

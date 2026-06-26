@@ -1047,7 +1047,6 @@ function somarConcluidosHoje(qtd = 1) {
         span.innerText = atual + qtd;
     }
 }
-
 function diminuirConcluidosHoje(qtd = 1) {
     const span = document.getElementById("concluidosHojeNumero");
     if (span) {
@@ -1064,3 +1063,117 @@ function verificarMudancaColunaMenu(colunaOrigem, colunaDestino) {
         diminuirConcluidosHoje(1);
     }
 }
+
+let wallpaperSelecionado = "montanha.jpg";
+
+function selecionarWallpaper(imagem){
+
+    wallpaperSelecionado = imagem;
+
+    document.querySelector(".board").style.backgroundImage =
+        `url('/static/img/${imagem}')`;
+}
+
+async function salvarWallpaper(){
+
+    console.log("Salvando:", wallpaperSelecionado);
+
+    const resposta = await fetch("/alterar-wallpaper/",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json",
+            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]")?.value
+        },
+        body: JSON.stringify({
+            imagem: wallpaperSelecionado
+        })
+    });
+
+    console.log(resposta.status);
+
+    fecharWallpaper();
+}
+
+
+async function alterarWallpaper(imagem) {
+
+    document.querySelector('.board').style.backgroundImage = `url('/static/img/${imagem}')`;
+
+    await fetch("/alterar-wallpaper/",{
+        method: "POST",
+        headers:{
+            "Content-Type":"application/json",
+            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]")?.value
+        },
+        body: JSON.stringify({
+            imagem:imagem
+        })
+    });
+    fecharWallpaper();
+}
+function abrirWallpaper() {
+    document.getElementById("modalWallpaper").style.display = "flex";
+}
+
+function fecharWallpaper() {
+    document.getElementById("modalWallpaper").style.display = "none";
+}
+
+let modalAtivo = false;
+let timerInatividade;
+let timerAviso;
+
+// 5 minutos em milissegundos (5 minutos * 60 segundos * 1000 milissegundos)
+const TEMPO_LOGOUT = 5 * 60 * 1000;      
+// 2 minutos de tolerância (para fechar o sistema cravado em 7 minutos totais)
+const TEMPO_AVISO = 2 * 60 * 1000;     
+
+function resetarInatividade() {
+    if (modalAtivo) return;
+
+    // Limpa ambos os timers para reiniciar a contagem do zero
+    clearTimeout(timerInatividade);
+    clearTimeout(timerAviso);
+
+    // Agenda APENAS a aparição do modal de aviso
+    timerAviso = setTimeout(() => {
+        abrirModalIdle();
+    }, TEMPO_AVISO);
+}
+
+function abrirModalIdle() {
+    modalAtivo = true;
+    document.getElementById("modalIdle").style.display = "flex";
+
+    // CORREÇÃO CRÍTICA: O timer de expulsão só começa a contar AGORA, 
+    // dando os 10 segundos para o usuário clicar em "Continuar logado"
+    timerInatividade = setTimeout(() => {
+        logoutAgora();
+    }, TEMPO_LOGOUT);
+}
+
+function fecharModalIdle() {
+    modalAtivo = false;
+    document.getElementById("modalIdle").style.display = "none";
+    
+    // Limpa o timer de expulsão já que o usuário interagiu a tempo
+    clearTimeout(timerInatividade); 
+}
+
+function continuarLogado() {
+    fecharModalIdle();
+    resetarInatividade(); // Reinicia o ciclo de contagem principal
+}
+
+function logoutAgora() {
+    window.location.href = "/logout/";
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    window.addEventListener("mousemove", resetarInatividade);
+    window.addEventListener("keydown", resetarInatividade);
+    window.addEventListener("click", resetarInatividade);
+    window.addEventListener("scroll", resetarInatividade);
+
+    resetarInatividade();
+});

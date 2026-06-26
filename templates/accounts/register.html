@@ -1,69 +1,94 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Criar Conta{% endblock %}
 
 {% block content %}
+<div class="container-register">
+    <div class="card-register">
 
-<div class="tela-login">
+        <div class="logo">
+            <i class="fa-solid fa-user-plus"></i>
+        </div>
 
-    <h1>Criar Conta</h1>
-    <p>Cadastre-se no Kanban</p>
+        <h1>Criar Conta<span>.</span></h1>
 
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alerta {{ message.tags }}">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
+        <p class="subtitulo">
+            Cadastre-se para acessar o Kanban
+        </p>
 
-    <form method="POST" autocomplete="off">
-        {% csrf_token %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alerta {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
 
-        <input 
-            type="text" 
-            name="nome_completo" 
+        <form method="POST">
+            {% csrf_token %}
+
+        <div class="campo-cadastro">
+        <i class="fa-solid fa-user"></i>
+        <input
+            type="text"
+            name="nome_completo"
             placeholder="Nome Completo"
-            autocomplete="off">
+            autocomplete="name">
+            
+    </div>
 
-        <input type="text"
-               name="new_user"
-               placeholder="Usuário"
-               autocomplete="off">
+    <div class="campo-cadastro">
+        <i class="fa-solid fa-at"></i>
+        <input
+            type="text"
+            name="new_user"
+            placeholder="Usuário"
+            autocomplete="username">
+    </div>
 
-        <input type="email"
-               name="new_email"
-               placeholder="Email"
-               autocomplete="off"
-               class="{% if erro_campo == 'email' %}erro-input{% endif %}">
+    <div class="campo-cadastro">
+        <i class="fa-solid fa-envelope"></i>
+        <input
+            type="email"
+            name="new_email"
+            placeholder="Email"
+            autocomplete="email">
+    </div>
 
-        <div class="input-wrapper" style="position: relative;">
-            <input type="password"
-                   name="new_pass"
-                   placeholder="Senha"
-                   autocomplete="new-password"
-                   class="{% if erro_campo == 'senha' %}erro-input{% endif %}"
-                   style="margin-bottom: 15px;">
-            <i class="fa-solid fa-eye toggle-password" 
-               style="position: absolute; right: 60px; top: 24%; cursor: pointer; color: #666; font-size: 18px;"></i>
-        </div>
+    <div class="campo-cadastro">
+        <i class="fa-solid fa-lock"></i>
 
-        <div class="input-wrapper" style="position: relative;">
-            <input type="password"
-                   name="new_confirm"
-                   placeholder="Confirmar senha"
-                   autocomplete="new-password"
-                   class="{% if erro_campo == 'senha' %}erro-input{% endif %}"
-                   style="margin-bottom: 15px;">
-            <i class="fa-solid fa-eye toggle-password" 
-               style="position: absolute; right: 60px; top: 24%; cursor: pointer; color: #666; font-size: 18px;"></i>
-        </div>
+        <input
+            type="password"
+            name="new_pass"
+            placeholder="Senha"
+            autocomplete="new-password">
 
-        <button type="submit">Cadastrar</button>
-    </form>
+        <i class="fa-solid fa-eye toggle-password olho-cadastro"></i>
+    </div>
 
-    <a href="/" class="btn-login">Já possui conta? Entrar</a>
+    <div class="campo-cadastro">
+        <i class="fa-solid fa-lock"></i>
 
+        <input
+            type="password"
+            name="new_confirm"
+            placeholder="Confirmar senha"
+            autocomplete="new-password">
+
+        <i class="fa-solid fa-eye toggle-password olho-cadastro"></i>
+    </div>
+
+            <button type="submit">
+                Criar Conta
+            </button>
+        </form>
+
+        <a class="link-login" href="/">
+            Já possui conta? Entrar
+        </a>
+
+    </div>
 </div>
-
 {% endblock %}

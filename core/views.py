@@ -38,21 +38,19 @@ def dashboard(request):
 
     # 🔴 Vencidos (não concluídos)
     vencidos = cards.filter(
-        data_vencimento__lt=hoje,
-        data_conclusao__isnull=True
+        data_vencimento__lt=hoje
     ).exclude(coluna="CO").count()
 
     # 🟡 Próximos do vencimento (até 2 dias)
     proximos = cards.filter(
         data_vencimento__gte=hoje,
-        data_vencimento__lte=hoje + timedelta(days=2),
-        data_conclusao__isnull=True
+        data_vencimento__lte=hoje + timedelta(days=2)
     ).exclude(coluna="CO").count()
 
     # ✅ Concluídos hoje
     concluidos_hoje = cards.filter(
         coluna="CO",
-        data_conclusao=hoje
+        criado_em__date=hoje
     ).count()
 
     return render(request, 'core/dashboard.html', {

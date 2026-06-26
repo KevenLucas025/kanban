@@ -17,47 +17,44 @@ document.querySelectorAll(".coluna").forEach(coluna => {
 
         onEnd: function (evt) {
 
-            const card = evt.item;
-            const novaColuna = evt.to.dataset.coluna;
-            const colunaAntiga = evt.from.dataset.coluna;
-            const cardId = card.dataset.id;
-            
-            const csrf = document.querySelector("[name=csrfmiddlewaretoken]").value;
+        const card = evt.item;
+        const novaColuna = evt.to.dataset.coluna;
+        const colunaAntiga = evt.from.dataset.coluna;
+        const cardId = card.dataset.id;
+        
+        const csrf = document.querySelector("[name=csrfmiddlewaretoken]").value;
 
-            fetch("/card/mover/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": csrf
-                },
-                body: JSON.stringify({
-                    id: cardId,
-                    coluna: novaColuna
-                })
+        fetch("/card/mover/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrf
+            },
+            body: JSON.stringify({
+                id: cardId,
+                coluna: novaColuna
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === "ok") {
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "ok") {
 
-                    // ✅ ATUALIZA A COLUNA NO CARD
-                    card.dataset.coluna = novaColuna;
+                // ✅ ATUALIZA A COLUNA NO CARD
+                card.dataset.coluna = novaColuna;
 
-                    // 🔢 Atualiza contadores só se salvou
-                    if (novaColuna !== colunaAntiga) {
-                        atualizarContador(colunaAntiga, -1);
-                        atualizarContador(novaColuna, +1);
-                        
-                        // 🔥 NOVA LINHA: Atualiza o contador de concluídos hoje no menu lateral
-                        verificarMudancaColunaMenu(colunaAntiga, novaColuna);
-                    }
-
-                } else {
-                    alert("Erro ao mover card");
+                // 🔢 Atualiza contadores só se salvou
+                if (novaColuna !== colunaAntiga) {
+                    atualizarContador(colunaAntiga, -1);
+                    atualizarContador(novaColuna, +1);
                 }
-            })
-            .catch(err => {
-                console.error("Erro:", err);
-            });
-        }
-    }); 
+
+            } else {
+                alert("Erro ao mover card");
+            }
+        })
+        .catch(err => {
+            console.error("Erro:", err);
+        });
+    }
+}); 
 });

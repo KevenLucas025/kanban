@@ -6,84 +6,72 @@
 {% block content %}
 
 <div class="dashboard">
+    <div class="barra-lateral-fixa"></div>
+
     {% include 'menu_lateral.html' %}
 
     <header class="topbar">
-        
-    <!-- LADO ESQUERDO -->
+
     <div class="topo-esquerda">
 
-        <!-- BOTÃO MENU LATERAL -->
-        <button 
-            class="btn-menu-lateral"
-            type="button"
-            data-bs-toggle="offcanvas"
-            data-bs-target="#menuLateral">
-            ☰
-        </button>
+    <button
+        class="btn-menu-lateral"
+        type="button"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#menuLateral">
+        ☰
+    </button>
+    
 
-    <div class="label-total-cards">
-            📌 <span id="totalCardsNumero">{{ total_cards }}</span> cards encontrados
-    </div>
-
-        <!-- FILTRO -->
+    <div class="topo-filtros">
         <form class="filtro-data" id="formFiltroData" method="GET">
-
             <div class="campo-data">
                 <label>De</label>
-                <input 
-                    type="date"
-                    id="dataDe"
-                    name="de"
-                    value="{{ request.GET.de }}"
-                >
+                <input type="date" id="dataDe" name="de">
             </div>
 
             <div class="campo-data">
                 <label>Até</label>
-                <input 
-                    type="date"
-                    id="dataAte"
-                    name="ate"
-                    value="{{ request.GET.ate }}"
-                >
+                <input type="date" id="dataAte" name="ate">
             </div>
 
             <button type="submit" class="btn-filtrar">
                 🔍 Filtrar
             </button>
-
         </form>
     </div>
+</div>
+    
 
+        <div class="topo-direita">
+            <div class="user-menu">
+                <div class="user-info" onclick="togleMenu()">
+                    <span class="nome-user">{{ request.user.first_name }}</span>
 
-    <div class="user-menu">
+                    <div class="user-avatar">
+                        {% if request.user.profile.foto %}
+                            <img src="{{ request.user.profile.foto.url }}" alt="Foto">
+                        {% else %}
+                            {{ request.user.username|slice:":1"|upper }}
+                        {% endif %}
+                    </div>
+                </div>
 
-        <div class="user-info" onclick="togleMenu()">
-
-            <span class="nome-user">
-                {{ request.user.first_name }}
-            </span>
-
-            <div class="user-avatar">
-                {% if request.user.profile.foto %}
-                    <img src="{{ request.user.profile.foto.url }}" alt="Foto">
-                {% else %}
-                    {{ request.user.username|slice:":1"|upper }}
-                {% endif %}
+                <div class="container-total-cards">
+                    <div class="label-total-cards">
+                        📌 <span id="totalCardsNumero">{{ total_cards }}</span> cards encontrados
+                    </div>
+                </div>
             </div>
         </div>
 
-        
-
         <div class="dropdown-menu" id="menuPerfil">
-
             <a href="javascript:void(0)" onclick="abrirUpload()">📷 Adicionar Foto</a>
             <a href="javascript:void(0)" onclick="removerFoto()">❌ Remover Foto</a>
             <a href="javascript:void(0)" onclick="visualizarFoto()">👁️ Visualizar Foto</a>
             <a href="javascript:void(0)" onclick="abrirDados()">👤 Meus Dados</a>
+            <a href="javascript:void(0)" onclick="abrirWallpaper()">🖼️ Alterar Papel de Parede</a>
             <a href="javascript:void(0)" onclick="sairSistema()">🚪 Sair</a>
-
         </div>
 
         <form id="formFoto"
@@ -91,783 +79,390 @@
             action="{% url 'upload_foto' %}"
             enctype="multipart/form-data"
             style="display:none;">
-
             {% csrf_token %}
             <input type="file" name="foto" id="inputFoto" accept="image/*">
-
         </form>
 
+    </header> <div class="board" 
+    {% with wallpaper="img/"|add:request.user.profile.wallpaper|default:"img/montanha.jpg" %}
+    style="background-image: url('{% static wallpaper %}');">
+    {% endwith %}
+        <div class="board-content">
+
+            <div class="coluna lista-cards" data-coluna="AF">
+                <div class="topo-coluna">
+                    <h2>📌 A Fazer <span>{{ contador_colunas.AF }}</span></h2>
+                    <button class="btn-menu-lista" onclick="toggleMenuLista(this)">⋮</button>
+                    <div class="menu-lista">
+                        <a href="javascript:void(0)" onclick="adicionarCard(this)">➕ Adicionar Card</a>
+                        <a href="javascript:void(0)" onclick="excluirLista(this)">🗑️ Excluir Lista</a>
+                    </div>
+                </div>
+
+                {% for card in cards %}
+                    {% if card.coluna == "AF" %}
+                        <div class="card-task"
+                            data-id="{{ card.id }}"
+                            data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
+                            data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
+                            data-status="{{ card.status }}"
+                            data-coluna="{{ card.coluna }}">
+                             
+                            <div class="topo-card">
+                                <span class="status {{ card.status }}"></span>
+                                <span class="titulo-card">{{ card.titulo }}</span>
+                                <small class="data-card">📅 {{ card.criado_em|date:"d/m/Y" }}</small>
+                                <button class="btn-menu-card" onclick="toggleMenuCard(this)">⋮</button>
+                                <div class="menu-card">
+                                    <a href="javascript:void(0)" onclick="abrirDetalhesCard('{{ card.id }}')">ℹ️ Detalhes</a>
+                                    <a href="javascript:void(0)" onclick="renomearCard(this)">✏️ Renomear</a>
+                                    <a href="javascript:void(0)" onclick="excluirCard(this)">🗑️ Excluir</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="coluna lista-cards" data-coluna="PE">
+                <div class="topo-coluna">
+                    <h2>⏳ Pendente <span>{{ contador_colunas.PE }}</span></h2>
+                    <button class="btn-menu-lista" onclick="toggleMenuLista(this)">⋮</button>
+                    <div class="menu-lista">
+                        <a href="javascript:void(0)" onclick="adicionarCard(this)">➕ Adicionar Card</a>
+                        <a href="javascript:void(0)" onclick="excluirLista(this)">🗑️ Excluir Lista</a>
+                    </div>
+                </div>
+
+                {% for card in cards %}
+                    {% if card.coluna == "PE" %}
+                        <div class="card-task"
+                            data-id="{{ card.id }}"
+                            data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
+                            data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
+                            data-status="{{ card.status }}"
+                            data-coluna="{{ card.coluna }}">
+
+                            <div class="topo-card">
+                                <span class="status {{ card.status }}"></span>
+                                <span class="titulo-card">{{ card.titulo }}</span>
+                                <small class="data-card">📅 {{ card.criado_em|date:"d/m/Y" }}</small>
+                                <button class="btn-menu-card" onclick="toggleMenuCard(this)">⋮</button>
+                                <div class="menu-card">
+                                    <a href="javascript:void(0)" onclick="abrirDetalhesCard('{{ card.id }}')">ℹ️ Detalhes</a>
+                                    <a href="javascript:void(0)" onclick="renomearCard(this)">✏️ Renomear</a>
+                                    <a href="javascript:void(0)" onclick="excluirCard(this)">🗑️ Excluir</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="coluna lista-cards" data-coluna="FF">
+                <div class="topo-coluna">
+                    <h2>🧱 Falta Finalizar <span>{{ contador_colunas.FF }}</span></h2>
+                    <button class="btn-menu-lista" onclick="toggleMenuLista(this)">⋮</button>
+                    <div class="menu-lista">
+                        <a href="javascript:void(0)" onclick="adicionarCard(this)">➕ Adicionar Card</a>
+                        <a href="javascript:void(0)" onclick="excluirLista(this)">🗑️ Excluir Lista</a>
+                    </div>
+                </div>
+
+                {% for card in cards %}
+                    {% if card.coluna == "FF" %}
+                        <div class="card-task"
+                            data-id="{{ card.id }}"
+                            data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
+                            data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
+                            data-status="{{ card.status }}"
+                            data-coluna="{{ card.coluna }}">
+
+                            <div class="topo-card">
+                                <span class="status {{ card.status }}"></span>
+                                <span class="titulo-card">{{ card.titulo }}</span>
+                                <small class="data-card">📅 {{ card.criado_em|date:"d/m/Y" }}</small>
+                                <button class="btn-menu-card" onclick="toggleMenuCard(this)">⋮</button>
+                                <div class="menu-card">
+                                    <a href="javascript:void(0)" onclick="abrirDetalhesCard('{{ card.id }}')">ℹ️ Detalhes</a>
+                                    <a href="javascript:void(0)" onclick="renomearCard(this)">✏️ Renomear</a>
+                                    <a href="javascript:void(0)" onclick="excluirCard(this)">🗑️ Excluir</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="coluna lista-cards" data-coluna="EP">
+                <div class="topo-coluna">
+                    <h2>🚀 Em Progresso <span>{{ contador_colunas.EP }}</span></h2>
+                    <button class="btn-menu-lista" onclick="toggleMenuLista(this)">⋮</button>
+                    <div class="menu-lista">
+                        <a href="javascript:void(0)" onclick="adicionarCard(this)">➕ Adicionar Card</a>
+                        <a href="javascript:void(0)" onclick="excluirLista(this)">🗑️ Excluir Lista</a>
+                    </div>
+                </div>
+
+                {% for card in cards %}
+                    {% if card.coluna == "EP" %}
+                        <div class="card-task"
+                            data-id="{{ card.id }}"
+                            data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
+                            data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
+                            data-status="{{ card.status }}"
+                            data-coluna="{{ card.coluna }}">
+
+                            <div class="topo-card">
+                                <span class="status {{ card.status }}"></span>
+                                <span class="titulo-card">{{ card.titulo }}</span>
+                                <small class="data-card">📅 {{ card.criado_em|date:"d/m/Y" }}</small>
+                                <button class="btn-menu-card" onclick="toggleMenuCard(this)">⋮</button>
+                                <div class="menu-card">
+                                    <a href="javascript:void(0)" onclick="abrirDetalhesCard('{{ card.id }}')">ℹ️ Detalhes</a>
+                                    <a href="javascript:void(0)" onclick="renomearCard(this)">✏️ Renomear</a>
+                                    <a href="javascript:void(0)" onclick="excluirCard(this)">🗑️ Excluir</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="coluna lista-cards" data-coluna="CO">
+                <div class="topo-coluna">
+                    <h2>✅ Concluído <span>{{ contador_colunas.CO }}</span></h2>
+                    <button class="btn-menu-lista" onclick="toggleMenuLista(this)">⋮</button>
+                    <div class="menu-lista">
+                        <a href="javascript:void(0)" onclick="adicionarCard(this)">➕ Adicionar Card</a>
+                        <a href="javascript:void(0)" onclick="excluirLista(this)">🗑️ Excluir Lista</a>
+                    </div>
+                </div>
+
+                {% for card in cards %}
+                    {% if card.coluna == "CO" %}
+                        <div class="card-task"
+                            data-id="{{ card.id }}"
+                            data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
+                            data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
+                            data-status="{{ card.status }}"
+                            data-coluna="{{ card.coluna }}">
+                            
+                            <div class="topo-card">
+                                <span class="status {{ card.status }}"></span>
+                                <span class="titulo-card">{{ card.titulo }}</span>
+                                <small class="data-card">📅 {{ card.criado_em|date:"d/m/Y" }}</small>
+                                <button class="btn-menu-card" onclick="toggleMenuCard(this)">⋮</button>
+                                <div class="menu-card">
+                                    <a href="javascript:void(0)" onclick="abrirDetalhesCard('{{ card.id }}')">ℹ️ Detalhes</a>
+                                    <a href="javascript:void(0)" onclick="renomearCard(this)">✏️ Renomear</a>
+                                    <a href="javascript:void(0)" onclick="excluirCard(this)">🗑️ Excluir</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="coluna lista-cards" data-coluna="CA">
+                <div class="topo-coluna">
+                    <h2>❌ Cancelado <span>{{ contador_colunas.CA }}</span></h2>
+                    <button class="btn-menu-lista" onclick="toggleMenuLista(this)">⋮</button>
+                    <div class="menu-lista">
+                        <a href="javascript:void(0)" onclick="adicionarCard(this)">➕ Adicionar Card</a>
+                        <a href="javascript:void(0)" onclick="excluirLista(this)">🗑️ Excluir Lista</a>
+                    </div>
+                </div>
+
+                {% for card in cards %}
+                    {% if card.coluna == "CA" %}
+                        <div class="card-task"
+                            data-id="{{ card.id }}"
+                            data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
+                            data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
+                            data-status="{{ card.status }}"
+                            data-coluna="{{ card.coluna }}">
+
+                            <div class="topo-card">
+                                <span class="status {{ card.status }}"></span>
+                                <span class="titulo-card">{{ card.titulo }}</span>
+                                <small class="data-card">📅 {{ card.criado_em|date:"d/m/Y" }}</small>
+                                <button class="btn-menu-card" onclick="toggleMenuCard(this)">⋮</button>
+                                <div class="menu-card">
+                                    <a href="javascript:void(0)" onclick="abrirDetalhesCard('{{ card.id }}')">ℹ️ Detalhes</a>
+                                    <a href="javascript:void(0)" onclick="renomearCard(this)">✏️ Renomear</a>
+                                    <a href="javascript:void(0)" onclick="excluirCard(this)">🗑️ Excluir</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+        </div>
     </div>
-
-</header>
-
-    <div class="board">
-
-        <!-- COLUNA -->
-        <div class="coluna lista-cards" data-coluna="AF">
-
-            <div class="topo-coluna">
-                <h2>📌 A Fazer <span>{{ contador_colunas.AF }}</span></h2>
-
-                <button class="btn-menu-lista" onclick="toggleMenuLista(this)">
-                    ⋮
-                </button>
-
-                <div class="menu-lista">
-                    <a href="javascript:void(0)" onclick="adicionarCard(this)">
-                        ➕ Adicionar Card
-                    </a>
-
-
-                    <a href="javascript:void(0)" onclick="excluirLista(this)">🗑️ Excluir Lista</a>
-                </div>
-            </div>
-
-            {% for card in cards %}
-                {% if card.coluna == "AF" %}
-                    <div class="card-task"
-                        data-id="{{ card.id }}"
-                        data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
-                        data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
-                        data-status="{{ card.status }}"
-                        data-coluna="{{ card.coluna }}">
-                         
-                        <div class="topo-card">
-                            <span class="status {{ card.status }}"></span>
-
-                            <span class="titulo-card">
-                                {{ card.titulo }}
-                            </span>
-
-                            <small class="data-card">
-                                📅 {{ card.criado_em|date:"d/m/Y" }}
-                                </small>
-
-                            <button class="btn-menu-card"
-                                onclick="toggleMenuCard(this)">
-                                ⋮
-                            </button>
-
-                            <div class="menu-card">
-
-                                <a href="javascript:void(0)" onclick="abrirDetalhesCard('{{ card.id }}')">
-                                    ℹ️ Detalhes
-                                </a>
-
-                                <a href="javascript:void(0)"
-                                onclick="renomearCard(this)">
-                                    ✏️ Renomear
-                                </a>
-
-                                <a href="javascript:void(0)"
-                                onclick="excluirCard(this)">
-                                    🗑️ Excluir
-                                </a>
-
-                            </div>
-
-                        </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
-
+</div> <div id="modalCrop" class="modal-crop">
+    <div class="crop-box">
+        <button class="btn-fechar" onclick="fecharModalCrop()">✕</button>
+        <div class="crop-area">
+            <img id="imagemCrop">
+            <button class="btn-confirmar" onclick="confirmarCrop()">✔</button>
         </div>
-
-        <!-- COLUNA -->
-        <div class="coluna lista-cards" data-coluna="PE">
-
-            <div class="topo-coluna">
-                <h2>⏳ Pendente <span>{{ contador_colunas.PE }}</span></h2>
-
-                <button class="btn-menu-lista" onclick="toggleMenuLista(this)">
-                    ⋮
-                </button>
-
-                <div class="menu-lista">
-                    <a href="javascript:void(0)" onclick="adicionarCard(this)">
-                        ➕ Adicionar Card
-                    </a>
-
-
-                    <a href="javascript:void(0)" onclick="excluirLista(this)">🗑️ Excluir Lista</a>
-                </div>
-            </div>
-
-            {% for card in cards %}
-                {% if card.coluna == "PE" %}
-                    <div class="card-task"
-                        data-id="{{ card.id }}"
-                        data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
-                        data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
-                        data-status="{{ card.status }}"
-                        data-coluna="{{ card.coluna }}">
-
-                        <div class="topo-card">
-                            <span class="status {{ card.status }}"></span>
-
-                            <span class="titulo-card">
-                                {{ card.titulo }}
-                            </span>
-                            <small class="data-card">
-                               📅  {{ card.criado_em|date:"d/m/Y" }}
-                            </small>
-
-                            <button class="btn-menu-card"
-                                onclick="toggleMenuCard(this)">
-                                ⋮
-                            </button>
-
-                            <div class="menu-card">
-
-                                <a href="javascript:void(0)" onclick="abrirDetalhesCard('{{ card.id }}')">
-                                    ℹ️ Detalhes
-                                </a>
-
-                                <a href="javascript:void(0)"
-                                onclick="renomearCard(this)">
-                                    ✏️ Renomear
-                                </a>
-
-                                <a href="javascript:void(0)"
-                                onclick="excluirCard(this)">
-                                    🗑️ Excluir
-                                </a>
-
-                            </div>
-
-                        </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
-
-        </div>
-
-        
-
-        <!-- COLUNA -->
-        <div class="coluna lista-cards" data-coluna="FF">
-
-            <div class="topo-coluna">
-                <h2>🧱 Falta Finalizar <span>{{ contador_colunas.FF }}</span></h2>
-
-                <button class="btn-menu-lista" onclick="toggleMenuLista(this)">
-                    ⋮
-                </button>
-
-                <div class="menu-lista">
-                    <a href="javascript:void(0)" onclick="adicionarCard(this)">
-                        ➕ Adicionar Card
-                    </a>
-
-
-                    <a href="javascript:void(0)" onclick="excluirLista(this)">🗑️ Excluir Lista</a>
-                </div>
-            </div>
-
-            {% for card in cards %}
-                {% if card.coluna == "FF" %}
-                    <div class="card-task"
-                        data-id="{{ card.id }}"
-                        data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
-                        data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
-                        data-status="{{ card.status }}"
-                        data-coluna="{{ card.coluna }}">
-
-                        <div class="topo-card">
-                            <span class="status {{ card.status }}"></span>
-
-                            <span class="titulo-card">
-                                {{ card.titulo }}
-                            </span>
-                            <small class="data-card">
-                               📅  {{ card.criado_em|date:"d/m/Y" }}
-                            </small>
-
-                            <button class="btn-menu-card"
-                                onclick="toggleMenuCard(this)">
-                                ⋮
-                            </button>
-
-                            <div class="menu-card">
-
-                                <a href="javascript:void(0)" onclick="abrirDetalhesCard('{{ card.id }}')">
-                                    ℹ️ Detalhes
-                                </a>
-
-                                <a href="javascript:void(0)"
-                                onclick="renomearCard(this)">
-                                    ✏️ Renomear
-                                </a>
-
-                                <a href="javascript:void(0)"
-                                onclick="excluirCard(this)">
-                                    🗑️ Excluir
-                                </a>
-
-                            </div>
-
-                        </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
-
-        </div>
-
-        <!-- COLUNA -->
-        <div class="coluna lista-cards" data-coluna="EP">
-
-            <div class="topo-coluna">
-                <h2>🚀 Em Progresso <span>{{ contador_colunas.EP }}</span></h2>
-
-                <button class="btn-menu-lista" onclick="toggleMenuLista(this)">
-                    ⋮
-                </button>
-
-                <div class="menu-lista">
-                    <a href="javascript:void(0)" onclick="adicionarCard(this)">
-                        ➕ Adicionar Card
-                    </a>
-
-
-                    <a href="javascript:void(0)" onclick="excluirLista(this)">🗑️ Excluir Lista</a>
-                </div>
-            </div>
-
-            {% for card in cards %}
-                {% if card.coluna == "EP" %}
-                    <div class="card-task"
-                        data-id="{{ card.id }}"
-                        data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
-                        data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
-                        data-status="{{ card.status }}"
-                        data-coluna="{{ card.coluna }}">
-
-
-                        <div class="topo-card">
-                            <span class="status {{ card.status }}"></span>
-
-                            <span class="titulo-card">
-                                {{ card.titulo }}
-                            </span>
-                            <small class="data-card">
-                               📅  {{ card.criado_em|date:"d/m/Y" }}
-                            </small>
-
-                            <button class="btn-menu-card"
-                                onclick="toggleMenuCard(this)">
-                                ⋮
-                            </button>
-
-                            <div class="menu-card">
-
-                                <a href="javascript:void(0)" onclick="abrirDetalhesCard('{{ card.id }}')">
-                                    ℹ️ Detalhes
-                                </a>
-
-                                <a href="javascript:void(0)"
-                                onclick="renomearCard(this)">
-                                    ✏️ Renomear
-                                </a>
-
-                                <a href="javascript:void(0)"
-                                onclick="excluirCard(this)">
-                                    🗑️ Excluir
-                                </a>
-
-                            </div>
-
-                        </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
-
-        </div>
-
-        <!-- COLUNA -->
-        <div class="coluna lista-cards" data-coluna="CO">
-
-            <div class="topo-coluna">
-                <h2>✅ Concluído <span>{{ contador_colunas.CO }}</span></h2>
-
-                <button class="btn-menu-lista" onclick="toggleMenuLista(this)">
-                    ⋮
-                </button>
-
-                <div class="menu-lista">
-                    <a href="javascript:void(0)" onclick="adicionarCard(this)">
-                        ➕ Adicionar Card
-                    </a>
-
-
-                    <a href="javascript:void(0)" onclick="excluirLista(this)">🗑️ Excluir Lista</a>
-                </div>
-            </div>
-
-            {% for card in cards %}
-                {% if card.coluna == "CO" %}
-                    <div class="card-task"
-                        data-id="{{ card.id }}"
-                        data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
-                        data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
-                        data-status="{{ card.status }}"
-                        data-coluna="{{ card.coluna }}">
-
-                        
-                        <div class="topo-card">
-                            <span class="status {{ card.status }}"></span>
-
-                            <span class="titulo-card">
-                                {{ card.titulo }}
-                            </span>
-                            <small class="data-card">
-                               📅  {{ card.criado_em|date:"d/m/Y" }}
-                            </small>
-
-                            <button class="btn-menu-card"
-                                onclick="toggleMenuCard(this)">
-                                ⋮
-                            </button>
-
-                            <div class="menu-card">
-
-                                <a href="javascript:void(0)" onclick="abrirDetalhesCard('{{ card.id }}')">
-                                    ℹ️ Detalhes
-                                </a>
-
-                                <a href="javascript:void(0)"
-                                onclick="renomearCard(this)">
-                                    ✏️ Renomear
-                                </a>
-
-                                <a href="javascript:void(0)"
-                                onclick="excluirCard(this)">
-                                    🗑️ Excluir
-                                </a>
-
-                            </div>
-
-                        </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
-
-        </div>
-
-        <!-- COLUNA -->
-        <div class="coluna lista-cards" data-coluna="CA">
-
-            <div class="topo-coluna">
-                <h2>❌ Cancelado <span>{{ contador_colunas.CA }}</span></h2>
-
-                <button class="btn-menu-lista" onclick="toggleMenuLista(this)">
-                    ⋮
-                </button>
-
-                <div class="menu-lista">
-                    <a href="javascript:void(0)" onclick="adicionarCard(this)">
-                        ➕ Adicionar Card
-                    </a>
-
-
-                    <a href="javascript:void(0)" onclick="excluirLista(this)">🗑️ Excluir Lista</a>
-                </div>
-            </div>
-
-            {% for card in cards %}
-                {% if card.coluna == "CA" %}
-                    <div class="card-task"
-                        data-id="{{ card.id }}"
-                        data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
-                        data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
-                        data-status="{{ card.status }}"
-                        data-coluna="{{ card.coluna }}">
-
-                        <div class="topo-card">
-                            <span class="status {{ card.status }}"></span>
-
-                            <span class="titulo-card">
-                                {{ card.titulo }}
-                            </span>
-                            <small class="data-card">
-                               📅  {{ card.criado_em|date:"d/m/Y" }}
-                            </small>
-
-                            <button class="btn-menu-card"
-                                onclick="toggleMenuCard(this)">
-                                ⋮
-                            </button>
-
-                            <div class="menu-card">
-
-                                <a href="javascript:void(0)" onclick="abrirDetalhesCard('{{ card.id }}')">
-                                    ℹ️ Detalhes
-                                </a>
-
-                                <a href="javascript:void(0)"
-                                onclick="renomearCard(this)">
-                                    ✏️ Renomear
-                                </a>
-
-                                <a href="javascript:void(0)"
-                                onclick="excluirCard(this)">
-                                    🗑️ Excluir
-                                </a>
-
-                            </div>
-
-                        </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
-
-        </div>
+    </div>
 </div>
 
-
-
-    <!-- MODAIS -->
-    <div id="modalCrop" class="modal-crop" >
-        <div class="crop-box">
-            <button class="btn-fechar" onclick="fecharModalCrop()">✕</button>
-
-            <div class="crop-area">
-                <img id="imagemCrop">
-
-                <button class="btn-confirmar" onclick="confirmarCrop()">✔</button>
-            </div>
+<div id="modalRemover" class="modal-confirmar">
+    <div class="box-confirmar">
+        <h3>Remover Imagem?</h3>
+        <p>Deseja realmente remover a sua foto de perfil?</p>
+        <div class="acoes-modal">
+            <button onclick="fecharRemover()" class="btn-cancelar">Cancelar</button>
+            <button onclick="confirmarRemover()" class="btn-remover">Remover</button>
         </div>
     </div>
+</div>
 
-    <div id="modalRemover" class="modal-confirmar">
-        <div class="box-confirmar">
-            <h3>Remover Imagem?</h3>
-            <p>Deseja realmente remover a sua foto de perfil?</p>
+<div id="toastSucesso" class="toast-sucesso">
+    ✅ Foto removida com sucesso
+</div>
 
-            <div class="acoes-modal">
-                <button onclick="fecharRemover()" class="btn-cancelar">Cancelar</button>
-                <button onclick="confirmarRemover()" class="btn-remover">Remover</button>
-            </div>
+<div id="modal-Sair" class="modal-confirmar">
+    <div class="box-confirmar">
+        <h3>Encerrar sessão?</h3>
+        <p>Deseja realmente encerrar sua sessão?</p>
+        <div class="acoes-modal">
+            <button onclick="fecharSair()" class="btn-cancelar-sair-sistema">Cancelar</button>
+            <button onclick="confirmarSair()" class="btn-sair-sistema">Sair</button>
         </div>
     </div>
+</div>
 
-    <div id="toastSucesso" class="toast-sucesso">
-        ✅ Foto removida com sucesso
+<div id="modalVisualizar" class="modal-confirmar">
+    <div class="box-visualizar">
+        <button class="btn-fechar-preview" onclick="fecharVisualizar()">X</button>
+        <img id="imgVisualizar" src="" alt="Foto Perfil">
     </div>
+</div>
 
-    <div id="modal-Sair" class="modal-confirmar">
-        <div class="box-confirmar">
-            <h3>Encerrar sessão?</h3>
-
-            <p>Deseja realmente encerrar sua sessão?</p>
-
-            <div class="acoes-modal">
-                <button onclick="fecharSair()" class="btn-cancelar">Cancelar</button>
-                <button onclick="confirmarSair()" class="btn-sair">Sair</button>
-            </div>
+<div id="modalDados" class="modal-confirmar">
+    <div class="box-dados">
+        <h3>👤 Meus Dados</h3>
+        <div class="foto-perfil-modal">
+            {% if request.user.profile.foto %}
+                <img src="{{ request.user.profile.foto.url }}">
+            {% else %}
+                <div class="avatar-sem-foto">
+                    {{ request.user.username|slice:":1"|upper }}
+                </div>
+            {% endif %}
+        </div>
+        <p><strong>Nome:</strong> {{ request.user.first_name }}</p>
+        <p><strong>Usuário:</strong> {{ request.user.username }}</p>
+        <p><strong>Email:</strong> {{ request.user.email }}</p>
+        <p><strong>Conta criada:</strong> {{ request.user.date_joined|date:"d/m/Y" }}</p>
+        <div class="acoes-modal">
+            <button onclick="fecharDados()" class="btn-cancelar">Fechar</button>
         </div>
     </div>
-
-    <div id="modalVisualizar" class="modal-confirmar">
-        <div class="box-visualizar">
-            <button class="btn-fechar-preview" onclick="fecharVisualizar()">X</button>
-            <img id="imgVisualizar" src="" alt="Foto Perfil">
-        </div>
-    </div>
-
-    <div id="modalDados" class="modal-confirmar">
-        <div class="box-dados">
-
-            <h3>👤 Meus Dados</h3>
-
-            <div class="foto-perfil-modal">
-                {% if request.user.profile.foto %}
-                    <img src="{{ request.user.profile.foto.url }}">
-                {% else %}
-                    <div class="avatar-sem-foto">
-                        {{ request.user.username|slice:":1"|upper }}
-                    </div>
-                {% endif %}
-            </div>
-
-            <p><strong>Nome:</strong> {{ request.user.first_name }}</p>
-            <p><strong>Usuário:</strong> {{ request.user.username }}</p>
-            <p><strong>Email:</strong> {{ request.user.email }}</p>
-            <p><strong>Conta criada:</strong> {{ request.user.date_joined|date:"d/m/Y" }}</p>
-
-            <div class="acoes-modal">
-                <button onclick="fecharDados()" class="btn-cancelar">
-                    Fechar
-                </button>
-            </div>
-
-        </div>
-    </div>
-
 </div>
 
 <div id="modalNovoCard" class="modal-confirmar">
     <div class="box-confirmar">
-
         <h3>Novo Card</h3>
-
-        <input 
-            type="text"
-            id="nomeNovoCard"
-            placeholder="Digite o nome do card"
-            style="
-                width:90%;
-                padding:12px;
-                margin-top:15px;
-                border:1px solid #d1d5db;
-                border-radius:10px;
-                font-size:15px;
-            "
-        >
-
+        <input type="text" id="nomeNovoCard" placeholder="Digite o nome do card" style="width:90%; padding:12px; margin-top:15px; border:1px solid #d1d5db; border-radius:10px; font-size:15px;">
         <div class="acoes-modal" style="margin-top:20px;">
-            <button onclick="fecharNovoCard()" class="btn-cancelar">
-                Cancelar
-            </button>
-
-            <button onclick="salvarNovoCard()" class="btn-salvar">
-                Salvar
-            </button>
+            <button onclick="fecharNovoCard()" class="btn-cancelar">Cancelar</button>
+            <button onclick="salvarNovoCard()" class="btn-salvar">Salvar</button>
         </div>
-
     </div>
 </div>
+
 <div id="modalRenomearCard" class="modal-confirmar">
     <div class="box-confirmar">
-
         <h3>Renomear Card</h3>
-
-        <input 
-            type="text"
-            id="inputRenomearCard"
-            placeholder="Digite o novo nome"
-            style="
-                width:90%;
-                padding:12px;
-                margin-top:15px;
-                border:1px solid #d1d5db;
-                border-radius:10px;
-                font-size:15px;
-            "
-        >
-
+        <input type="text" id="inputRenomearCard" placeholder="Digite o novo nome" style="width:90%; padding:12px; margin-top:15px; border:1px solid #d1d5db; border-radius:10px; font-size:15px;">
         <div class="acoes-modal" style="margin-top:20px;">
-            <button onclick="fecharRenomearCard()" class="btn-cancelar">
-                Cancelar
-            </button>
-
-            <button onclick="salvarRenomearCard()" class="btn-salvar">
-                Salvar
-            </button>
+            <button onclick="fecharRenomearCard()" class="btn-cancelar">Cancelar</button>
+            <button onclick="salvarRenomearCard()" class="btn-salvar">Salvar</button>
         </div>
-
     </div>
 </div>
 
 <div id="modalExcluirCard" class="modal-confirmar">
     <div class="box-confirmar">
-
         <h3>🗑️ Excluir Card</h3>
-
         <p>Deseja realmente excluir este card?</p>
-
         <div class="acoes-modal">
-
-            <button onclick="fecharExcluirCard()" class="btn-cancelar">
-                Cancelar
-            </button>
-
-            <button onclick="confirmarExcluirCard()" class="btn-remover">
-                Excluir
-            </button>
-
+            <button onclick="fecharExcluirCard()" class="btn-cancelar">Cancelar</button>
+            <button onclick="confirmarExcluirCard()" class="btn-remover">Excluir</button>
         </div>
-
     </div>
 </div>
 
 <div id="modalExcluirLista" class="modal-confirmar">
     <div class="box-confirmar">
-
         <h3>🗑️ Excluir Lista</h3>
-
         <p>Tem certeza que deseja excluir todos os cards desta lista?</p>
-
         <div class="acoes-modal">
-            <button onclick="fecharExcluirLista()" class="btn-cancelar">
-                Cancelar
-            </button>
-
-            <button onclick="confirmarExcluirLista()" class="btn-remover">
-                Excluir
-            </button>
+            <button onclick="fecharExcluirLista()" class="btn-cancelar">Cancelar</button>
+            <button onclick="confirmarExcluirLista()" class="btn-remover">Excluir</button>
         </div>
-
     </div>
 </div>
-<div id="toastAlerta" class="toast-alerta">
-    ⚠️ Mensagem
-</div>
+
+<div id="toastAlerta" class="toast-alerta">⚠️ Mensagem</div>
 
 <div id="modalNovoCardGlobal" class="modal-confirmar">
     <div class="box-confirmar">
-
         <h3>➕ Criar Cards em Massa</h3>
-
-        <!-- título -->
-        <input 
-            type="text"
-            id="tituloCardsGlobal"
-            placeholder="Título dos cards"
-        >
-
-        <!-- seleção de colunas -->
+        <input type="text" id="tituloCardsGlobal" placeholder="Título dos cards">
         <div class="checkbox-colunas">
-
-        <label class="check-item">
-            <input type="checkbox" value="AF">
-            <span>A Fazer</span>
-        </label>
-
-        <label class="check-item">
-            <input type="checkbox" value="PE">
-            <span>Pendente</span>
-        </label>
-
-        <label class="check-item">
-            <input type="checkbox" value="CA">
-            <span>Cancelado</span>
-        </label>
-
-        <label class="check-item">
-            <input type="checkbox" value="FF">
-            <span>Falta Finalizar</span>
-        </label>
-
-        <label class="check-item">
-            <input type="checkbox" value="EP">
-            <span>Em Progresso</span>
-        </label>
-
-        <label class="check-item">
-            <input type="checkbox" value="CO">
-            <span>Concluído</span>
-        </label>
-        
-        <label class="check-item">
-            <input type="checkbox" id="checkAllColunas">
-            <span><strong>Selecionar Todos</strong></span>
-        </label>
-
-    </div>
-
-        <!-- botão salvar GLOBAL -->
-        <button onclick="salvarCardsGlobal()" class="btn-salvar">
-            Salvar em todas selecionadas
-        </button>
-
-        <button onclick="fecharCardsGlobal()" class="btn-cancelar">
-            Cancelar
-        </button>
-
+            <label class="check-item"><input type="checkbox" value="AF"> <span>A Fazer</span></label>
+            <label class="check-item"><input type="checkbox" value="PE"> <span>Pendente</span></label>
+            <label class="check-item"><input type="checkbox" value="CA"> <span>Cancelado</span></label>
+            <label class="check-item"><input type="checkbox" value="FF"> <span>Falta Finalizar</span></label>
+            <label class="check-item"><input type="checkbox" value="EP"> <span>Em Progresso</span></label>
+            <label class="check-item"><input type="checkbox" value="CO"> <span>Concluído</span></label>
+            <label class="check-item"><input type="checkbox" id="checkAllColunas"> <span><strong>Selecionar Todos</strong></span></label>
+        </div>
+        <button onclick="salvarCardsGlobal()" class="btn-salvar-cards-global">Salvar em todas selecionadas</button>
+        <button onclick="fecharCardsGlobal()" class="btn-cancelar-cards-global">Cancelar</button>
     </div>
 </div>
+
 <div class="modal-busca" id="modalBuscaCard">
     <div class="box-confirmar">
-
         <h3>🔍 Buscar Card</h3>
-
-        <input type="text"
-               id="inputBuscaCard"
-               placeholder="Digite o nome do card...">
-
+        <input type="text" id="inputBuscaCard" placeholder="Digite o nome do card...">
         <div class="acoes-modal">
-            <button class="btn-cancelar" onclick="fecharBuscaCard()">
-                Cancelar
-            </button>
-
-            <button class="btn-salvar" onclick="buscarCard()">
-                Buscar
-            </button>
+            <button class="btn-cancelar-busca-cards" onclick="fecharBuscaCard()">Cancelar</button>
+            <button class="btn-salvar-busca-cards" onclick="buscarCard()">Buscar</button>
         </div>
-
     </div>
 </div>
+
 <div id="modalDetalhesCard" class="modal-overlay" style="display: none;">
     <div class="modal-content">
-
-        <!-- Botão fechar -->
         <button onclick="fecharDetalhesCard()" class="btn-fechar-modal">✕</button>
-
-        <!-- Título -->
-        <h2 id="detalheTitulo" class="titulo-detalhe">
-            Título do Card
-        </h2>
-
-        <!-- Data -->
-        <p class="info-secundaria">
-             <strong>📅 Criado em:</strong> 
-            <span id="detalheData"></span>
-        </p>
-        <p class="info-secundaria">
-            <strong>📌Status:</strong>
-            <span id="detalheStatus">A Fazer</span>
-        </p>
-        <p class="info-secundaria">
-            <strong>👤 Responsável: </strong>
-            <span id="detalheResponsavel">Keven Lucas da Silva Jesus</span>
-        </p>
-        <p class="info-secundaria">
-            <strong>⏰Data de Vencimento:</strong>
-            <span id="detalheVencimento">05/05/2026</span>
-        </p>
-        <p class="info-secundaria">
-            <strong>✅ Data de Conclusão:</strong>
-            <span id="detalheConclusao">Ainda não concluído</span>
-        </p>
-        <p class="info-secundaria">
-            <strong>🔥Prioridade:</strong>
-            <span id="detalhePrioridade">Alta</span>
-        </p>
-
+        <h2 id="detalheTitulo" class="titulo-detalhe">Título do Card</h2>
+        <p class="info-secundaria"><strong>📅 Criado em:</strong> <span id="detalheData"></span></p>
+        <p class="info-secundaria"><strong>📌 Status:</strong> <span id="detalheStatus">A Fazer</span></p>
+        <p class="info-secundaria"><strong>👤 Responsável:</strong> <span id="detalheResponsavel">Keven Lucas da Silva Jesus</span></p>
+        <p class="info-secundaria"><strong>⏰ Data de Vencimento:</strong> <span id="detalheVencimento">05/05/2026</span></p>
+        <p class="info-secundaria"><strong>✅ Data de Conclusão:</strong> <span id="detalheConclusao">Ainda não concluído</span></p>
+        <p class="info-secundaria"><strong>🔥 Prioridade:</strong> <span id="detalhePrioridade">Alta</span></p>
         <hr>
-
-
         <div class="corpo-detalhes">
             <div class="cabecalho-descricao">
-        <p class="label">📄 Descrição</p>
-            <button class="btn-editar-descricao"
-                    onclick="editarDescricaoCard()">
-                ✏️
-            </button>
-        </div>
-        <!-- Modo visualização -->
-        <p id="descricaoTexto" class="descricao-texto">
-            Nenhuma descrição adicionada.
-        </p>
-        <!-- Descrição -->
-        <div id="areaEdicaoDescricao" style="display:none;">
-        <textarea 
-            id="detalhesDescricao"
-            rows="5"
-            class="textarea-descricao"
-            placeholder="Digite a descrição aqui...."
-        ></textarea>
-
-        <div class="acoes-modal" style="margin-top:10px;">
-            <button class="btn-cancelar"
-                    onclick="cancelarEdicaoDescricao()">
-                Cancelar
-            </button>
-
-            <button class="btn-salvar"
-                    onclick="salvarDescricaoCard()">
-                Salvar
-            </button>
+                <p class="label">📄 Descrição</p>
+                <button class="btn-editar-descricao" onclick="editarDescricaoCard()">✏️</button>
+            </div>
+            <p id="descricaoTexto" class="descricao-texto">Nenhuma descrição adicionada.</p>
+            <div id="areaEdicaoDescricao" style="display:none;">
+                <textarea id="detalhesDescricao" rows="5" class="textarea-descricao" placeholder="Digite a descrição aqui...."></textarea>
+                <div class="acoes-modal" style="margin-top:10px;">
+                    <button class="btn-cancelar" onclick="cancelarEdicaoDescricao()">Cancelar</button>
+                    <button class="btn-salvar" onclick="salvarDescricaoCard()">Salvar</button>
                 </div>
             </div>
         </div>
@@ -877,7 +472,6 @@
 <div id="modalFiltro" class="modal-confirmar">
     <div class="box-confirmar">
         <h3>📅 Filtros</h3>
-        
         <select id="tipoFiltro" style="width:100%; padding:10px; margin-top:10px;">
             <option value="">Selecione</option>
             <option value="az">🔤 A → Z</option>
@@ -885,15 +479,9 @@
             <option value="novo">📅 Mais recentes</option>
             <option value="antigo">📅 Mais antigos</option>
         </select>
-
         <div class="acoes-modal" style="margin-top:20px;">
-            <button onclick="fecharFiltro()" class="btn-cancelar">
-                Cancelar
-            </button>
-
-            <button onclick="aplicarFiltro()" class="btn-salvar">
-                Aplicar
-            </button>
+            <button onclick="fecharFiltro()" class="btn-cancelar-filtros">Cancelar</button>
+            <button onclick="aplicarFiltro()" class="btn-salvar-filtros">Aplicar</button>
         </div>
     </div>
 </div>
@@ -901,56 +489,78 @@
 <div id="modalSugestao" class="modal-confirmar" style="display: none;">
     <div class="box-confirmar">
         <h3>💡 Enviar Sugestão</h3>
-
         <input type="text" id="nomeSugestao" placeholder="Nome completo">
-         <input type="email" id="emailSugestao" placeholder="Seu e-mail">
-
-         <select  id="tipoSugestao"  style="width:100%; padding:10px; margin-top:10px;">
+        <input type="email" id="emailSugestao" placeholder="Seu e-mail">
+        <select id="tipoSugestao">
             <option value="">Selecione o assunto</option>
             <option value="Sugestão">Nova sugestão</option>
             <option value="Melhoria">Inclusão de melhoria</option>
             <option value="Bug">Bug</option>
             <option value="Erro">Erro</option>
             <option value="Outro">Outros</option>
-         </select>
-
-         <textarea id="descricaoSugestao" placeholder="Descreva aqui..." rows="4"></textarea>
-
-         <div class="botoes-modal">
-            <button class="btn-enviar-email" onclick="enviarSugestao()">
-                 Enviar
-            </button>
-
-            <button class="btn-cancelar-email" onclick="fecharSugestao()">
-                 Cancelar
-            </button>
+        </select>
+        <textarea id="descricaoSugestao" placeholder="Descreva aqui..." rows="4"></textarea>
+        <div class="botoes-modal">
+            <button class="btn-enviar-email" onclick="enviarSugestao()">Enviar</button>
+            <button class="btn-cancelar-email" onclick="fecharSugestao()">Cancelar</button>
         </div>
     </div>
 </div>
 
 <div id="modalConfirmarPDF" class="modal-confirmar">
     <div class="box-confirmar">
-
         <h3>⚠️ Gerar PDF</h3>
-
-        <p>
-            Gerar o PDF pode levar alguns segundos.<br><br>
-            Você pode continuar usando o Kanban normalmente 😉
-        </p>
-
+        <p>Gerar o PDF pode levar alguns segundos.<br><br>Você pode continuar usando o Kanban normalmente 😉</p>
         <div class="acoes">
-            <button onclick="confirmarExportacaoPDF()" class="btn-confirmar-pdf">
-                Sim, gerar PDF
-            </button>
-
-            <button onclick="fecharConfirmarPDF()" class="btn-cancelar-pdf">
-                Cancelar
-            </button>
+            <button onclick="confirmarExportacaoPDF()" class="btn-confirmar-pdf">Sim, gerar PDF</button>
+            <button onclick="fecharConfirmarPDF()" class="btn-cancelar-pdf">Cancelar</button>
         </div>
-
     </div>
 </div>
 
+<div id="modalWallpaper" class="modal-confirmar">
+    <div class="box-confirmar">
+        <h3>🖼️ Escolha um papel de parede</h3>
 
+        <div class="lista-wallpapers">
+            <img src="{% static 'img/montanha.jpg' %}"
+                 onclick="selecionarWallpaper('montanha.jpg')">
+
+            <img src="{% static 'img/lago.jpg' %}"
+                 onclick="selecionarWallpaper('lago.jpg')">
+
+            <img src="{% static 'img/floresta.jpg' %}"
+                 onclick="selecionarWallpaper('floresta.jpg')">
+
+            <img src="{% static 'img/cidade.jpg' %}"
+                 onclick="selecionarWallpaper('cidade.jpg')">
+        </div>
+
+        <div class="botoes-modal">
+            <button class="btn-salvar-wallpaper" onclick="salvarWallpaper()">
+                Salvar
+            </button>
+
+            <button class="btn-cancelar-wallpaper" onclick="fecharWallpaper()">
+                Cancelar
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="modalIdle" class="modal-confirmar">
+    <div class="box-confirmar">
+        <h3>⚠️ Sessão inativa</h3>
+        <p>Você será desconectado em breve por inatividade.</p>
+
+        <button onclick="continuarLogado()" class="btn-continuar-logado">
+            Continuar logado
+        </button>
+
+        <button onclick="logoutAgora()" class="btn-cancelar-sessao">
+            Sair agora
+        </button>
+    </div>
+</div>
 
 {% endblock %}

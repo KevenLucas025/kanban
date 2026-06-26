@@ -867,7 +867,9 @@ function fecharSugestao(){
 }
 
 function enviarSugestao(){
-
+    const btn = document.querySelector(".btn-enviar-email");
+    const texto = document.querySelector(".texto-btn");
+    const spinner = btn?.querySelector(".spinner");
     
     const nome = document.getElementById("nomeSugestao").value.trim();
     const email = document.getElementById("emailSugestao").value.trim();
@@ -881,33 +883,52 @@ function enviarSugestao(){
 
     const csrf = document.querySelector("[name=csrfmiddlewaretoken]").value;
 
-    fetch("/sugestao/enviar/", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrf
-        },
-        body: JSON.stringify({
-            nome,
-            email,
-            tipo,
-            descricao
+    if (btn && texto && spinner){
+        btn.disabled = true;
+        btn.classList.add("enviando");
+        texto.innerText = "Enviando";
+    }
+
+    setTimeout(() => {
+
+        fetch("/sugestao/enviar/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrf
+            },
+            body: JSON.stringify({
+                nome,
+                email,
+                tipo,
+                descricao
+            })
         })
-    })
-    .then(res => res.json())
-    .then(data => {
-        
-        if (data.status === "ok"){
-            mostrarAlerta("✅ Sugestão enviada com sucesso!", "sucesso");
-            fecharSugestao();
-        }else{
-            mostrarAlerta("❌ Erro ao enviar sugestão");
-        }
-    })
-    .catch(() => {
-        mostrarAlerta("❌ Erro na comunicação com o servidor.")
-    });
+        .then(res => res.json())
+        .then(data => {
+
+            if (data.status === "ok"){
+                mostrarAlerta("✅ Sugestão enviada com sucesso!", "sucesso");
+            }else{
+                mostrarAlerta("❌ Erro ao enviar sugestão");
+            }
+        })
+
+        .catch(() => {
+            mostrarAlerta("❌ Erro na comunicação com o servidor.");
+        })
+
+        .finally(() => {
+            if (btn && texto && spinner){
+                btn.disabled = false;
+                btn.classList.remove("enviando");
+                texto.innerText = "Enviar";
+            }
+        });
+
+    }, 3000);
 }
+
 function exportarPDF(){
 
     const elemento = document.querySelector(".board");

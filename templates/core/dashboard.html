@@ -488,7 +488,7 @@
 
 <div id="modalSugestao" class="modal-confirmar" style="display: none;">
     <div class="box-confirmar">
-        <h3>💡 Enviar Sugestão</h3>
+        <h3>💡  Relatar um problema ou sugestão</h3>
         <input type="text" id="nomeSugestao" placeholder="Nome completo">
         <input type="email" id="emailSugestao" placeholder="Seu e-mail">
         <select id="tipoSugestao">
@@ -501,7 +501,10 @@
         </select>
         <textarea id="descricaoSugestao" placeholder="Descreva aqui..." rows="4"></textarea>
         <div class="botoes-modal">
-            <button class="btn-enviar-email" onclick="enviarSugestao()">Enviar</button>
+            <button class="btn-enviar-email" onclick="enviarSugestao()">
+            <span class="texto-btn">Enviar</span>
+            <span class="spinner"></span>
+            </button>
             <button class="btn-cancelar-email" onclick="fecharSugestao()">Cancelar</button>
         </div>
     </div>

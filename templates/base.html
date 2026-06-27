@@ -1150,63 +1150,6 @@
             transform: scale(1);
         }
     }
-
-    .btn-cancelar-filtros{
-        width: 90px;
-        height: 45px;
-        color: #111827;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        font-weight: 600;
-    }
-    .btn-cancelar-filtros:hover{
-        background: #e5e7eb;
-        
-    }
-    .btn-salvar-filtros{
-        border: none;
-        width: 90px;
-        height: 45px;
-        border-radius: 10px;
-        cursor: pointer;
-        font-weight: 600;
-        margin-top: 20px;
-        background: #22c55e;
-        color: white;
-
-    }
-    .btn-salvar-filtros:hover{
-        background: #16a34a;
-    }
-
-
-    .btn-salvar-busca-cards{
-        border: none;
-        width: 90px;
-        height: 45px;
-        border-radius: 10px;
-        cursor: pointer;
-        font-weight: 600;
-        margin-top: 20px;
-        background: #22c55e;
-        color: white;
-    }
-    
-    .btn-cancelar-busca-cards{
-        width: 90px;
-        height: 45px;
-        color: #111827;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        font-weight: 600;
-        border: none;
-    }
-    .btn-cancelar-busca-cards:hover{
-        background: #e5e7eb;
-        
-    }
     
 
     .box-visualizar{
@@ -2055,6 +1998,43 @@
         display: flex;
         gap: 50px;
     }
+    .btn-salvar-busca-cards,
+    .btn-cancelar-busca-cards{
+        flex: 1; /* faz os dois ocuparem o mesmo espaço */
+        
+        padding: 10px;
+        border-radius: 10px;
+        border: none;
+
+        font-size: 14px;
+        font-weight: 600;
+
+        cursor: pointer;
+        transition: 0.2s ease;
+        margin-top: 15px;
+    }
+
+    .btn-salvar-busca-cards{
+        background: #22c55e;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .btn-salvar-busca-cards:hover{
+        background: #16a34a;
+    }
+    
+    .btn-cancelar-busca-cards{
+        color: #111827;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .btn-cancelar-busca-cards:hover{
+        background: #d1d5db;
+        
+    }
 
     .btn-salvar-descricao,
     .btn-cancelar-descricao{
@@ -2142,10 +2122,11 @@
         align-items: center;
         background: #e5e7eb;
         color: #111827;
-        border-radius: 10px;
+        border-radius: 12px; /*Esse caso precisa por que o botão é sozinho*/
         border: none;
         font-weight: 600;
     }
+
     .btn-fechar-dados:hover{
         background: #d1d5db;
     }
@@ -2173,8 +2154,6 @@
         gap: 8px;
     }
     .btn-remover-imagem{
-        border: none;
-        font-weight: 600;
         background: #ef4444;
         color: white;
         display: flex;
@@ -2188,10 +2167,6 @@
     .btn-cancelar-imagem{
         background: #e5e7eb;
         color: #111827;
-        border-radius: 12px;
-        cursor: pointer;
-        font-weight: 600;
-        border: none;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -2233,8 +2208,6 @@
     .btn-cancelar-card-individual{
         background: #e5e7eb;
         color: #111827;
-        cursor: pointer;
-        border: none;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -2283,8 +2256,6 @@
     .btn-cancelar-renomear-individual{
         background: #e5e7eb;
         color: #111827;
-        cursor: pointer;
-        border: none;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -2311,7 +2282,6 @@
     .btn-cancelar-excluir-card{
         background: #e5e7eb;
         color: #111827;
-        border: none;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -2322,7 +2292,6 @@
     }
 
     .btn-excluir-card{
-        border: none;
         background: #ef4444;
         color: white;
         display: flex;
@@ -2372,7 +2341,7 @@
     }
 
     .btn-cancelar-sair-sistema,
-     .btn-sair-sistema{
+    .btn-sair-sistema{
         flex: 1; /* faz os dois ocuparem o mesmo espaço */
         
         padding: 10px;
@@ -2387,34 +2356,61 @@
     }
 
     .btn-cancelar-sair-sistema{
-        width: 90px;
-        height: 45px;
         color: #111827;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        font-weight: 600;
-        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     .btn-cancelar-sair-sistema:hover{
         background: #e5e7eb;
     }
     .btn-sair-sistema{
-        height: 45px;
-        width: 90px;
         color: white;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        font-weight: 600;
         background: #ef4444;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     
     .btn-sair-sistema:hover{
         background: #dc2626;
     }
+    .btn-cancelar-filtros,
+    .btn-salvar-filtros{
+        flex: 1; /* faz os dois ocuparem o mesmo espaço */
+        
+        padding: 10px;
+        border-radius: 10px;
+        border: none;
 
+        font-size: 14px;
+        font-weight: 600;
 
+        transition: 0.2s ease;
+        margin-top: 15px;
+    }
+    .btn-cancelar-filtros{
+        color: #111827;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+  
+    }
+    .btn-cancelar-filtros:hover{
+        background: #e5e7eb;
+        
+    }
+    .btn-salvar-filtros{
+        background: #22c55e;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+    }
+    .btn-salvar-filtros:hover{
+        background: #16a34a;
+    }
 
 
     

@@ -316,8 +316,8 @@
         <h3>Remover Imagem?</h3>
         <p>Deseja realmente remover a sua foto de perfil?</p>
         <div class="acoes-modal">
-            <button onclick="fecharRemover()" class="btn-cancelar">Cancelar</button>
-            <button onclick="confirmarRemover()" class="btn-remover">Remover</button>
+            <button onclick="fecharRemover()" class="btn-cancelar-imagem">Cancelar</button>
+            <button onclick="confirmarRemover()" class="btn-remover-imagem">Remover</button>
         </div>
     </div>
 </div>
@@ -361,7 +361,7 @@
         <p><strong>Email:</strong> {{ request.user.email }}</p>
         <p><strong>Conta criada:</strong> {{ request.user.date_joined|date:"d/m/Y" }}</p>
         <div class="acoes-modal">
-            <button onclick="fecharDados()" class="btn-cancelar">Fechar</button>
+            <button onclick="fecharDados()" class="btn-fechar-dados">Fechar</button>
         </div>
     </div>
 </div>
@@ -371,8 +371,8 @@
         <h3>Novo Card</h3>
         <input type="text" id="nomeNovoCard" placeholder="Digite o nome do card" style="width:90%; padding:12px; margin-top:15px; border:1px solid #d1d5db; border-radius:10px; font-size:15px;">
         <div class="acoes-modal" style="margin-top:20px;">
-            <button onclick="fecharNovoCard()" class="btn-cancelar">Cancelar</button>
-            <button onclick="salvarNovoCard()" class="btn-salvar">Salvar</button>
+            <button onclick="fecharNovoCard()" class="btn-cancelar-card-individual">Cancelar</button>
+            <button onclick="salvarNovoCard()" class="btn-salvar-card-individual">Salvar</button>
         </div>
     </div>
 </div>
@@ -382,8 +382,8 @@
         <h3>Renomear Card</h3>
         <input type="text" id="inputRenomearCard" placeholder="Digite o novo nome" style="width:90%; padding:12px; margin-top:15px; border:1px solid #d1d5db; border-radius:10px; font-size:15px;">
         <div class="acoes-modal" style="margin-top:20px;">
-            <button onclick="fecharRenomearCard()" class="btn-cancelar">Cancelar</button>
-            <button onclick="salvarRenomearCard()" class="btn-salvar">Salvar</button>
+            <button onclick="fecharRenomearCard()" class="btn-cancelar-renomear-individual">Cancelar</button>
+            <button onclick="salvarRenomearCard()" class="btn-salvar-renomear-individual">Salvar</button>
         </div>
     </div>
 </div>
@@ -393,8 +393,8 @@
         <h3>🗑️ Excluir Card</h3>
         <p>Deseja realmente excluir este card?</p>
         <div class="acoes-modal">
-            <button onclick="fecharExcluirCard()" class="btn-cancelar">Cancelar</button>
-            <button onclick="confirmarExcluirCard()" class="btn-remover">Excluir</button>
+            <button onclick="fecharExcluirCard()" class="btn-cancelar-excluir-card">Cancelar</button>
+            <button onclick="confirmarExcluirCard()" class="btn-excluir-card">Excluir</button>
         </div>
     </div>
 </div>
@@ -404,8 +404,8 @@
         <h3>🗑️ Excluir Lista</h3>
         <p>Tem certeza que deseja excluir todos os cards desta lista?</p>
         <div class="acoes-modal">
-            <button onclick="fecharExcluirLista()" class="btn-cancelar">Cancelar</button>
-            <button onclick="confirmarExcluirLista()" class="btn-remover">Excluir</button>
+            <button onclick="fecharExcluirLista()" class="btn-cancelar-excluir-lista">Cancelar</button>
+            <button onclick="confirmarExcluirLista()" class="btn-excluir-lista">Excluir</button>
         </div>
     </div>
 </div>
@@ -461,8 +461,8 @@
             <div id="areaEdicaoDescricao" style="display:none;">
                 <textarea id="detalhesDescricao" rows="5" class="textarea-descricao" placeholder="Digite a descrição aqui...."></textarea>
                 <div class="acoes-modal" style="margin-top:10px;">
-                    <button class="btn-cancelar" onclick="cancelarEdicaoDescricao()">Cancelar</button>
-                    <button class="btn-salvar" onclick="salvarDescricaoCard()">Salvar</button>
+                    <button class="btn-cancelar-descricao" onclick="cancelarEdicaoDescricao()">Cancelar</button>
+                    <button class="btn-salvar-descricao" onclick="salvarDescricaoCard()">Salvar</button>
                 </div>
             </div>
         </div>

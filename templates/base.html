@@ -19,6 +19,10 @@
         margin: 0;
         padding: 0;
     }
+
+    button{
+        cursor: pointer;
+    }
     body{
         background: rgb(31, 31,33);
         max-height: 100vh;
@@ -1100,24 +1104,10 @@
     .btn-cancelar-cards-global:hover{
         background: #d1d5db;
      }
-  
 
-    .btn-remover{
-        border: none;
-        padding: 12px 18px;
-        border-radius: 10px;
-        cursor: pointer;
-        font-weight: 600;
-    }
+    
+    
 
-    .btn-remover{
-        background: #ef4444;
-        color: white;
-    }
-
-    .btn-remover:hover{
-        background: #dc2626;
-    }
 
     .toast-sucesso{
         position: fixed;
@@ -1217,33 +1207,8 @@
         background: #e5e7eb;
         
     }
-    .btn-cancelar-sair-sistema{
-        width: 90px;
-        height: 45px;
-        color: #111827;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        font-weight: 600;
-        border: none;
-    }
-    .btn-cancelar-sair-sistema:hover{
-        background: #e5e7eb;
-    }
-    .btn-sair-sistema{
-        height: 45px;
-        width: 90px;
-        color: white;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        font-weight: 600;
-        background: #ef4444;
-    }
     
-    .btn-sair-sistema:hover{
-        background: #dc2626;
-    }
+
     .box-visualizar{
         position: relative;
         background: rgb(31, 31,33);
@@ -1311,6 +1276,7 @@
         display: flex;
         justify-content: center;
     }
+    
     @keyframes subirModal{
         from{
             opacity: 0;
@@ -2085,9 +2051,13 @@
         
     }
 
+    .acoes-modal{
+        display: flex;
+        gap: 50px;
+    }
 
-    .btn-enviar-email,
-    .btn-cancelar-email {
+    .btn-salvar-descricao,
+    .btn-cancelar-descricao{
         flex: 1; /* faz os dois ocuparem o mesmo espaço */
         
         padding: 10px;
@@ -2098,6 +2068,44 @@
         font-weight: 600;
 
         cursor: pointer;
+        transition: 0.2s ease;
+        margin-top: 15px;
+    }
+
+    .btn-cancelar-descricao{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #e5e7eb;
+        color: #111827;
+    }
+
+    .btn-cancelar-descricao:hover{
+        background: #d1d5db;
+    }
+
+    .btn-salvar-descricao{
+        position: relative;
+        background-color: #16a34a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #111827;
+    }
+
+    .btn-salvar-descricao:hover{
+        background: #16a34a;
+    }
+
+
+    .btn-enviar-email,
+    .btn-cancelar-email {
+        flex: 1; /* faz os dois ocuparem o mesmo espaço */
+        padding: 10px;
+        border-radius: 10px;
+        border: none;
+        font-size: 14px;
+        font-weight: 600;
         transition: 0.2s ease;
         margin-top: 15px;
     }
@@ -2127,6 +2135,20 @@
     .btn-cancelar-email:hover {
         background: #d1d5db;
     }
+    .btn-fechar-dados{
+        display: flex;
+        justify-content: center;
+        padding: 10px;
+        align-items: center;
+        background: #e5e7eb;
+        color: #111827;
+        border-radius: 10px;
+        border: none;
+        font-weight: 600;
+    }
+    .btn-fechar-dados:hover{
+        background: #d1d5db;
+    }
 
     .btn-exportar-pdf {
         width: 100%;
@@ -2141,8 +2163,6 @@
         font-size: 14px;
         font-weight: 600;
 
-        cursor: pointer;
-
         transition: all 0.2s ease;
 
         margin-bottom: 10px;
@@ -2152,6 +2172,251 @@
         justify-content: center;
         gap: 8px;
     }
+    .btn-remover-imagem{
+        border: none;
+        font-weight: 600;
+        background: #ef4444;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-remover-imagem:hover{
+        background: #dc2626;
+    }
+    .btn-cancelar-imagem{
+        background: #e5e7eb;
+        color: #111827;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .btn-cancelar-imagem:hover{
+        background: #d1d5db;
+    }
+
+    .btn-remover-imagem,
+    .btn-cancelar-imagem {
+        flex: 1; /* faz os dois ocuparem o mesmo espaço */
+        
+        padding: 10px;
+        border-radius: 10px;
+        border: none;
+
+        font-size: 14px;
+        font-weight: 600;
+
+        transition: 0.2s ease;
+        margin-top: 15px;
+    }
+
+    .btn-cancelar-card-individual,
+    .btn-salvar-card-individual{
+        flex: 1; /* faz os dois ocuparem o mesmo espaço */
+        
+        padding: 10px;
+        border-radius: 10px;
+        border: none;
+
+        font-size: 14px;
+        font-weight: 600;
+
+        transition: 0.2s ease;
+        margin-top: 15px;
+    }
+
+    .btn-cancelar-card-individual{
+        background: #e5e7eb;
+        color: #111827;
+        cursor: pointer;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-cancelar-card-individual:hover{
+        background: #d1d5db;
+    }
+
+    .btn-salvar-card-individual{
+        position: relative;
+        background-color: #16a34a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #111827;
+    }
+    .btn-salvar-card-individual:hover{
+        background: #15803d
+    }
+    .btn-cancelar-renomear-individual,
+    .btn-salvar-renomear-individual{
+        flex: 1; /* faz os dois ocuparem o mesmo espaço */
+        
+        padding: 10px;
+        border-radius: 10px;
+        border: none;
+
+        font-size: 14px;
+        font-weight: 600;
+
+        transition: 0.2s ease;
+        margin-top: 15px;
+    }
+     .btn-salvar-renomear-individual{
+        position: relative;
+        background-color: #16a34a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #111827;
+    }
+    .btn-salvar-renomear-individual:hover{
+        background: #15803d
+    }
+    .btn-cancelar-renomear-individual{
+        background: #e5e7eb;
+        color: #111827;
+        cursor: pointer;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-cancelar-renomear-individual:hover{
+        background: #d1d5db;
+    }
+    .btn-cancelar-excluir-card,
+    .btn-excluir-card{
+        flex: 1; /* faz os dois ocuparem o mesmo espaço */
+        
+        padding: 10px;
+        border-radius: 10px;
+        border: none;
+
+        font-size: 14px;
+        font-weight: 600;
+
+        transition: 0.2s ease;
+        margin-top: 15px;
+    }
+
+    .btn-cancelar-excluir-card{
+        background: #e5e7eb;
+        color: #111827;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-cancelar-excluir-card:hover{
+        background: #d1d5db;
+    }
+
+    .btn-excluir-card{
+        border: none;
+        background: #ef4444;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-excluir-card:hover{
+        background: #dc2626;
+    }
+    .btn-cancelar-excluir-lista,
+    .btn-excluir-lista{
+        flex: 1; /* faz os dois ocuparem o mesmo espaço */
+        
+        padding: 10px;
+        border-radius: 10px;
+        border: none;
+
+        font-size: 14px;
+        font-weight: 600;
+
+        transition: 0.2s ease;
+        margin-top: 15px;
+    }
+    .btn-cancelar-excluir-lista{
+        background: #e5e7eb;
+        color: #111827;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .btn-cancelar-excluir-lista:hover{
+        background: #d1d5db;
+    }
+    .btn-excluir-lista{
+        border: none;
+        background: #ef4444;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-excluir-lista:hover{
+        background: #dc2626;
+    }
+
+    .btn-cancelar-sair-sistema,
+     .btn-sair-sistema{
+        flex: 1; /* faz os dois ocuparem o mesmo espaço */
+        
+        padding: 10px;
+        border-radius: 10px;
+        border: none;
+
+        font-size: 14px;
+        font-weight: 600;
+
+        transition: 0.2s ease;
+        margin-top: 15px;
+    }
+
+    .btn-cancelar-sair-sistema{
+        width: 90px;
+        height: 45px;
+        color: #111827;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        border: none;
+    }
+    .btn-cancelar-sair-sistema:hover{
+        background: #e5e7eb;
+    }
+    .btn-sair-sistema{
+        height: 45px;
+        width: 90px;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        background: #ef4444;
+    }
+    
+    .btn-sair-sistema:hover{
+        background: #dc2626;
+    }
+
+
+
+
     
     /* hover */
     .btn-exportar-pdf:hover {

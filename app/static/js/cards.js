@@ -76,9 +76,16 @@ function salvarNovoCard(){
 
 }
 function salvarCardsGlobal() {
+
     const nome = document.getElementById("tituloCardsGlobal").value.trim();
-    const botao = document.querySelector("#modalNovoCardGlobal .btn-salvar");
     
+    const botao = document.querySelector("#modalNovoCardGlobal .btn-salvar-cards-global");
+
+    if (!botao) {
+        console.error("Botão não encontrado");
+        return;
+    }
+        
 
     if (botao.disabled) return;
 
@@ -479,32 +486,43 @@ function mostrarAlerta(msg, tipo = "erro") {
     }, 3500);
 }
 
-document.getElementById("formFiltroData").addEventListener("submit", function(e){
+const formFiltro = document.getElementById("formFiltroData");
 
-    const inputDe = document.getElementById("dataDe");
-    const inputAte = document.getElementById("dataAte");
+    if (formFiltro) {
 
-    if(de === "" && ate === ""){
-        e.preventDefault();
-        window.location.href = window.location.pathname;
-        return;
-    }
+        formFiltro.addEventListener("submit", function(e){
 
-    // Se preencheu só um campo
-    if(de !== "" && ate === ""){
-        e.preventDefault();
-        mostrarAlerta("Preencha a data Até.");
-        return;
-    }
+            const inputDe = document.getElementById("dataDe");
+            const inputAte = document.getElementById("dataAte");
 
-    // Se preencheu só um campo
-    if(de === "" && ate !== ""){
-        e.preventDefault();
-        mostrarAlerta("Preencha a data De.");
-        return;
-    }
+            const de = inputDe.value;
+            const ate = inputAte.value;
 
-});
+            if(de === "" && ate === ""){
+                e.preventDefault();
+                window.location.href = window.location.pathname;
+                return;
+            }
+
+            // Se preencheu só um campo
+            if(de !== "" && ate === ""){
+                e.preventDefault();
+                mostrarAlerta("Preencha a data Até.");
+                return;
+            }
+
+            // Se preencheu só um campo
+            if(de === "" && ate !== ""){
+                e.preventDefault();
+                mostrarAlerta("Preencha a data De.");
+                return;
+            }
+        });
+}
+
+
+
+    
 
 function abrirNovoCardGlobal(){
     // Fecha menu lateral
@@ -608,20 +626,24 @@ function recalcularTotalGlobal() {
 }
 const board = document.querySelector('.board');
 
-board.addEventListener('wheel', function (e) {
+if (board) {
 
-    const isInsideColumn = e.target.closest('.lista-cards');
+    board.addEventListener('wheel', function (e) {
 
-    // Se estiver dentro da coluna → deixa scroll normal (vertical)
-    if (isInsideColumn) {
-        return; // não faz nada
-    }
+        const isInsideColumn = e.target.closest('.lista-cards');
 
-    // Se NÃO estiver dentro da coluna → transforma em scroll horizontal
-    e.preventDefault();
-    board.scrollLeft += e.deltaY;
+        // Se estiver dentro da coluna → deixa scroll normal (vertical)
+        if (isInsideColumn) {
+            return;
+        }
 
-}, { passive: false });
+        // Se NÃO estiver dentro da coluna → transforma em scroll horizontal
+        e.preventDefault();
+        board.scrollLeft += e.deltaY;
+
+    }, { passive: false });
+
+}
 
 function abrirBuscaCard() {
     // Fecha o menu do Bootstrap
@@ -944,9 +966,15 @@ function exportarPDF(){
     html2pdf().set(opcoes).from(elemento).save();
 }
 
-document.getElementById("btnExportarPdf").addEventListener("click", function () {
-    document.getElementById("modalConfirmarPDF").style.display = "flex";
-});
+const btnExportarPdf = document.getElementById("btnExportarPdf");
+
+if (btnExportarPdf) {
+
+    btnExportarPdf.addEventListener("click", function () {
+        document.getElementById("modalConfirmarPDF").style.display = "flex";
+    });
+
+}
 
 function fecharConfirmarPDF(){
     document.getElementById("modalConfirmarPDF").style.display = "none";

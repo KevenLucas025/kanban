@@ -59,44 +59,51 @@ document.addEventListener('DOMContentLoaded', function() {
 
 let cropper;
 
-document.getElementById("inputFoto").addEventListener("change", function(e){
+const inputFoto = document.getElementById("inputFoto");
 
-    const file = e.target.files[0];
+if (inputFoto) {
 
-    if(file){
+    inputFoto.addEventListener("change", function(e){
 
-        const reader = new FileReader();
+        const file = e.target.files[0];
 
-        reader.onload = function(event){
+        if(file){
 
-            document.getElementById("imagemCrop").src = event.target.result;
+            const reader = new FileReader();
 
-            document.getElementById("modalCrop").style.display = "flex";
+            reader.onload = function(event){
 
-            cropper = new Cropper(
-                document.getElementById("imagemCrop"),
-                {
-                    aspectRatio: 1,
-                    viewMode: 1,
-                    dragMode: "move",
+                document.getElementById("imagemCrop").src = event.target.result;
 
-                    ready() {
-                        cropper.setCropBoxData({
-                            left: 120,
-                            top: 140,
-                            width: 300,
-                            height: 300
-                        });
+                document.getElementById("modalCrop").style.display = "flex";
+
+                cropper = new Cropper(
+                    document.getElementById("imagemCrop"),
+                    {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        dragMode: "move",
+
+                        ready() {
+                            cropper.setCropBoxData({
+                                left: 120,
+                                top: 140,
+                                width: 300,
+                                height: 300
+                            });
+                        }
                     }
-                }
-            );
+                );
 
-        };
+            };
 
-        reader.readAsDataURL(file);
-    }
+            reader.readAsDataURL(file);
+        }
 
-});
+    });
+
+}
+
 
 
 function confirmarCrop(){

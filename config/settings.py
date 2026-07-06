@@ -12,17 +12,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / ".env")
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_BACKEND = "anymail.backends.sendgrid.EmailBackend"
 
-EMAIL_HOST = "smtp.sendgrid.net"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+ANYMAIL = {
+    "SENDGRID_API_KEY": os.environ.get("SENDGRID_API_KEY"),
+}
 
-EMAIL_HOST_USER = "apikey"
-EMAIL_HOST_PASSWORD = os.getenv("SENDGRID_API_KEY")
-SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
-
-DEFAULT_FROM_EMAIL = "suportekanban@outlook.com"
+DEFAULT_FROM_EMAIL = os.environ.get(
+    "DEFAULT_FROM_EMAIL",
+    "suportekanban@outlook.com"
+)
 
 SITE_NAME = 'Kanban'
 
@@ -51,6 +50,7 @@ INSTALLED_APPS = [
     'core',
     'accounts',
     'app',
+    "anymail",
 ]
 
 MIDDLEWARE = [

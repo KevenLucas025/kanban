@@ -57,6 +57,11 @@ class Card(models.Model):
     titulo = models.CharField(
         max_length=200
     )
+    
+    descricao = models.CharField(
+        blank=True,
+        null=True
+    )
 
     descricao = models.TextField(
         blank=True,
@@ -97,7 +102,10 @@ class Card(models.Model):
         null=True,
         blank=True
     )
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7d5180e22eecfa8f7fc26d5d49d0c5b118986c81
     data_conclusao = models.DateField(
         null=True,
         blank=True

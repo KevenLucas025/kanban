@@ -3,8 +3,6 @@ function fecharRemover(){
     document.getElementById("modalRemover").style.display = "none";
 }
 
-
-
 function sairSistema(){
     document.getElementById("modal-Sair").style.display = "flex";
 }
@@ -14,3 +12,4 @@ function fecharSair(){
 function confirmarSair(){
     window.location.href = "/logout/";
 }
+

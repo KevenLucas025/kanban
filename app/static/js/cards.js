@@ -1163,7 +1163,6 @@ function editarDescricaoCard(){
 
 
 }
-
 function cancelarEdicaoDescricao(){
 
     document.getElementById("descricaoTexto").style.display = "block";

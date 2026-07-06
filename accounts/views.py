@@ -11,6 +11,7 @@ from .models import Card, Profile
 from django.contrib import messages
 from datetime import datetime,timedelta
 from django.core.mail import EmailMultiAlternatives
+from django.contrib.admin.views.decorators import staff_member_required
 from reportlab.lib.pagesizes import A4
 from django.http import HttpResponse
 from django.template.loader import render_to_string
@@ -20,8 +21,8 @@ import json
 
 def login_view(request):
     if request.method == 'POST':
-        usuario_input = request.POST.get('login_user','').strip()
-        senha_input = request.POST.get('login_pass','').strip()
+        usuario_input = request.POST.get('username','').strip()
+        senha_input = request.POST.get('password','').strip()
         
         
         # 1. Verificação de campos vazios
@@ -87,13 +88,22 @@ def register_view(request):
             return render(request, 'accounts/register.html', {
                 'erro_campo': 'email'
             })
+            
+        primeiro_usuario = User.objects.count() == 0
 
-        User.objects.create_user(
-            username=username,
-            email=email,
-            password=password,
-            first_name=nome_completo
+        usuario = User.objects.create_user(
+        username=username,
+        email=email,
+        password=password,
+        first_name=nome_completo
         )
+
+        # Se for o primeiro usuário do sistema,
+        # concede privilégios de administrador.
+        if primeiro_usuario:
+            usuario.is_staff = True
+            usuario.is_superuser = True
+            usuario.save()
 
         messages.success(request, "Conta criada com sucesso")
         return render(request, 'accounts/register.html', {
@@ -165,6 +175,10 @@ def criar_card(request):
         card = Card.objects.create(
             user=request.user,
             titulo=data["titulo"],
+            descricao=data.get("descricao", ""),
+            prioridade=data.get("prioridade", "normal"),
+            responsavel=data.get("responsavel", ""),
+            tags=data.get("tags", ""),
             coluna=data["coluna"],
             data_vencimento=data_vencimento
         )
@@ -173,6 +187,10 @@ def criar_card(request):
         return JsonResponse({
             "id": card.id,
             "titulo": card.titulo,
+            "descricao": card.descricao,
+            "prioridade": card.prioridade,
+            "responsavel": card.responsavel,
+            "tags": card.tags,
             "data": card.criado_em.strftime("%d/%m/%Y"),
             "vencimento": card.data_vencimento.strftime("%d/%m/%Y") if card.data_vencimento else "",
             "status": card.status()
@@ -377,4 +395,316 @@ def exportar_pdf(request):
 
     return response
             
-           
+@login_required
+def salvar_descricao_card(request, id):
+
+    if request.method == "POST":
+
+        data = json.loads(request.body)
+
+        card = Card.objects.get(
+            id=id,
+            user=request.user
+        )
+
+        card.descricao = data.get("descricao", "")
+        card.save()
+
+        return JsonResponse({
+            "status": "ok"
+        })
+
+    return JsonResponse({
+        "status": "erro"
+    })
+    
+@login_required
+@csrf_protect
+def alterar_wallpaper(request):
+    if request.method == 'POST':
+        
+        data = json.loads(request.body)
+        imagem = data.get("imagem")
+        
+        wallpapers_permitidos = [
+            "montanha.jpg",
+            "lago.jpg",
+            "floresta.jpg",
+            "cidade.jpg",
+        ]
+        
+        if imagem not in wallpapers_permitidos:
+            return JsonResponse({
+                "status": "erro",
+                "msg": "Wallpaper inválido."
+            })
+            
+        profile, created = Profile.objects.get_or_create(
+            user=request.user
+        )
+        
+        profile.wallpaper = imagem
+        profile.save()
+        
+        return JsonResponse({
+            "status": "ok"
+        })
+    return JsonResponse({
+        "status": "ok"
+    })
+    
+@login_required
+def gerenciar_usuarios(request):
+    print(request.user)
+    print(request.user.is_staff)
+    
+    if not request.user.is_staff:
+        return redirect("dashboard")
+    
+    return render(request,"usuarios/gerenciar_usuarios.html")
+
+@login_required
+def criar_usuario(request):
+    if not request.user.is_staff:
+        return JsonResponse({
+            "status":"erro",
+            "msg": "Sem permissão."
+        })
+        
+    if request.method == "POST":
+        
+        data = json.loads(request.body)
+        
+        nome = data.get("nome", "").strip()
+        username = data.get("username", "").strip()
+        email = data.get("email", "").strip()
+        senha = data.get("senha", "")
+        admin = data.get("admin", False)
+        
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({
+                "status":"erro",
+                "msg":"Usuário já existe."
+            })
+                    
+        if User.objects.filter(email=email).exists():
+            return JsonResponse({
+                "status":"erro",
+                "msg":"E-mail já cadastrado."
+            })
+            
+        usuario = User.objects.create_user(
+            username=username,
+            email=email,
+            password=senha,
+            first_name=nome
+        )
+
+        usuario.is_staff = admin
+        usuario.save()
+
+        return JsonResponse({
+            "status":"ok"
+        })
+    return JsonResponse({
+        "status":"erro"
+        })
+        
+        
+@login_required
+def listar_usuarios(request):
+
+    if not request.user.is_staff:
+        return JsonResponse({
+            "status": "erro",
+            "mensagem": "Sem permissão para acessar esta funcionalidade."
+        })
+
+    usuarios = User.objects.all()
+
+    dados = []
+
+    for u in usuarios:
+        dados.append({
+            "id": u.id,
+            "usuario": u.username,
+            "nome": u.first_name,
+            "email": u.email,
+            "administrador": u.is_staff,
+            "ativo": u.is_active,
+            "data_criacao": u.date_joined.strftime("%d/%m/%Y"),
+            "ultimo_login": u.last_login.strftime("%d/%m/%Y %H:%M") if u.last_login else "Nunca acessou",
+        })
+
+    return JsonResponse({
+        "usuarios": dados
+    })
+    
+@login_required
+def alterar_perfil_usuario(request, id):
+    
+    if not request.user.is_staff:
+        return JsonResponse({
+            "status": "erro",
+            "mensagem": "Sem permissão"
+        })
+    if request.method != "POST":
+        return JsonResponse({"status": "erro"})
+    
+    usuario = User.objects.get(id=id)
+     
+    usuario.is_staff = not usuario.is_staff
+    usuario.save()
+
+    return JsonResponse({
+        "status": "ok",
+        "administrador": usuario.is_staff
+    })
+    
+@login_required
+def verificar_username(request):
+    
+    if not request.user.is_staff:
+        return JsonResponse({"status":"erro"},status=403)
+    
+    username = request.GET.get("username","").strip()
+    
+    existe = User.objects.filter(username__iexact=username).exists()
+
+    return JsonResponse({
+        "existe": existe
+    })
+    
+@login_required
+def obter_usuario(request, id):
+
+    if not request.user.is_staff:
+        return JsonResponse({
+            "status": "erro",
+            "msg": "Sem permissão."
+        }, status=403)
+
+    try:
+        usuario = User.objects.get(id=id)
+
+        return JsonResponse({
+            "status": "ok",
+            "usuario": {
+                "id": usuario.id,
+                "nome": usuario.first_name,
+                "username": usuario.username,
+                "email": usuario.email,
+                "administrador": usuario.is_staff,
+                "ativo": usuario.is_active,
+                "data_criacao": usuario.date_joined.strftime("%d/%m/%Y"),
+                "ultimo_login": (
+                    usuario.last_login.strftime("%d/%m/%Y %H:%M")
+                    if usuario.last_login else "Nunca acessou"
+                ),
+            }
+        })
+
+    except User.DoesNotExist:
+        return JsonResponse({
+            "status": "erro",
+            "msg": "Usuário não encontrado."
+        }, status=404)
+        
+@login_required
+def editar_usuario(request, id):
+    if not request.user.is_staff:
+        return JsonResponse({
+            "status": "erro",
+            "msg":"Sem permissão"
+        },status=403)
+        
+    if request.method != "POST":
+        return JsonResponse({
+            "status":"erro",
+            "msg":"Método inválido"
+        },status=405)
+    
+    try:
+        usuario = User.objects.get(id=id)
+        
+        data = json.loads(request.body)
+        
+        nome = data.get("nome", "").strip()
+        username = data.get("username", "").strip()
+        email = data.get("email", "").strip()
+        admin = data.get("admin", False)
+        ativo = data.get("ativo", True)
+        
+        if not nome or not username or not email:
+            return JsonResponse({
+                "status": "erro",
+                "msg": "Preencha todos os campos."
+            })
+         # Verifica se outro usuário já utiliza esse username
+        if User.objects.exclude(id=id).filter(username__iexact=username).exists():
+            return JsonResponse({
+                "status": "erro",
+                "msg": "Nome de usuário já está em uso."
+            })
+        
+         # Verifica se outro usuário já utiliza esse e-mail
+        if User.objects.exclude(id=id).filter(email__iexact=email).exists():
+            return JsonResponse({
+                "status": "erro",
+                "msg": "E-mail já cadastrado."
+            })
+            
+        usuario.first_name = nome
+        usuario.username = username
+        usuario.email = email
+        usuario.is_staff = admin
+        usuario.is_active = ativo
+        
+        usuario.save()
+        
+        return JsonResponse({
+            "status":"ok"
+        })
+        
+    except User.DoesNotExist:
+        return JsonResponse({
+            "status": "erro",
+            "msg": "Usuário não encontrado."
+        }, status=404)
+        
+@login_required
+def excluir_usuario(request, id):
+
+    if not request.user.is_staff:
+        return JsonResponse({
+            "status": "erro",
+            "msg": "Sem permissão."
+        }, status=403)
+
+    if request.method != "POST":
+        return JsonResponse({
+            "status": "erro",
+            "msg": "Método inválido."
+        }, status=405)
+
+    try:
+        usuario = User.objects.get(id=id)
+
+        # Não permitir excluir a própria conta
+        if usuario == request.user:
+            return JsonResponse({
+                "status": "erro",
+                "msg": "Você não pode excluir sua própria conta."
+            })
+
+        usuario.delete()
+
+        return JsonResponse({
+            "status": "ok"
+        })
+
+    except User.DoesNotExist:
+        return JsonResponse({
+            "status": "erro",
+            "msg": "Usuário não encontrado."
+        }, status=404)

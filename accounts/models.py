@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from datetime import date
+from django.db.models.signals import pre_save
 
 
 class Profile(models.Model):
@@ -15,6 +16,11 @@ class Profile(models.Model):
         upload_to='perfil/',
         blank=True,
         null=True
+    )
+    
+    wallpaper = models.CharField(
+        max_length=100,
+        default="montanha.jpg"
     )
 
     def __str__(self):
@@ -31,9 +37,18 @@ def criar_profile(sender, instance, created, **kwargs):
 def salvar_profile(sender, instance, **kwargs):
     instance.profile.save()
     
+
     
     
 class Card(models.Model):
+
+    PRIORIDADES = [
+        ("normal", "Normal"),
+        ("baixa", "Baixa"),
+        ("media", "Média"),
+        ("alta", "Alta"),
+    ]
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE
@@ -41,6 +56,29 @@ class Card(models.Model):
 
     titulo = models.CharField(
         max_length=200
+    )
+
+    descricao = models.TextField(
+        blank=True,
+        default=""
+    )
+
+    prioridade = models.CharField(
+        max_length=10,
+        choices=PRIORIDADES,
+        default="normal"
+    )
+
+    responsavel = models.CharField(
+        max_length=100,
+        blank=True,
+        default=""
+    )
+
+    tags = models.CharField(
+        max_length=255,
+        blank=True,
+        default=""
     )
 
     coluna = models.CharField(
@@ -54,10 +92,17 @@ class Card(models.Model):
     criado_em = models.DateTimeField(
         auto_now_add=True
     )
+
     data_vencimento = models.DateField(
         null=True,
         blank=True
     )
+
+    data_conclusao = models.DateField(
+        null=True,
+        blank=True
+    )
+    
     
     def status(self):
         if not self.data_vencimento:
@@ -75,3 +120,20 @@ class Card(models.Model):
 
     def __str__(self):
         return self.titulo
+    
+@receiver(pre_save, sender=Card)
+def atualizar_data_conclusao(sender, instance, **kwargs):
+
+    if instance.id:
+        card_antigo = Card.objects.get(pk=instance.id)
+
+        if instance.coluna == "CO" and card_antigo.coluna != "CO":
+            instance.data_conclusao = date.today()
+
+        elif instance.coluna != "CO" and card_antigo.coluna == "CO":
+            instance.data_conclusao = None
+
+    else:
+        if instance.coluna == "CO":
+            instance.data_conclusao = date.today()
+    

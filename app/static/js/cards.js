@@ -5,7 +5,22 @@ function fecharNovoCard(){
 function salvarNovoCard(){
 
     const nome = document.getElementById("nomeNovoCard").value.trim();
-    
+
+    const descricao = document
+        .getElementById("descricaoNovoCard")
+        .value.trim();
+
+    const prioridade = document
+        .getElementById("prioridadeNovoCard")
+        .value;
+
+    const responsavel = document
+        .getElementById("responsavelNovoCard")
+        .value.trim();
+
+    const tags = document
+        .getElementById("tagsNovoCard")
+        .value.trim();
 
     if(nome === ""){
         return;
@@ -22,7 +37,11 @@ function salvarNovoCard(){
         },
         body: JSON.stringify({
             titulo: nome,
-            coluna: colunaSelecionada.dataset.coluna
+            coluna: colunaSelecionada.dataset.coluna,
+            descricao,
+            prioridade,
+            responsavel,
+            tags
             
         })
     })
@@ -35,9 +54,16 @@ function salvarNovoCard(){
 
         // 🔥 IMPORTANTE
         novo.setAttribute("data-id", data.id);
-        novo.setAttribute("data-vencimento", data.vencimento);
-        novo.setAttribute("data-status", data.status);
-        novo.setAttribute("data-coluna", colunaSelecionada.dataset.coluna);
+
+        novo.dataset.vencimento = data.vencimento;
+        novo.dataset.status = data.status;
+        novo.dataset.coluna = colunaSelecionada.dataset.coluna;
+
+        novo.dataset.descricao = data.descricao;
+        novo.dataset.prioridade = data.prioridade;
+        novo.dataset.responsavel = data.responsavel;
+        novo.dataset.tags = data.tags;
+        novo.dataset.conclusao = "";
 
         novo.innerHTML = `
             <div class="topo-card">
@@ -75,10 +101,18 @@ function salvarNovoCard(){
     });
 
 }
+
 function salvarCardsGlobal() {
+
     const nome = document.getElementById("tituloCardsGlobal").value.trim();
-    const botao = document.querySelector("#modalNovoCardGlobal .btn-salvar");
     
+    const botao = document.querySelector("#modalNovoCardGlobal .btn-salvar-cards-global");
+
+    if (!botao) {
+        console.error("Botão não encontrado");
+        return;
+    }
+        
 
     if (botao.disabled) return;
 
@@ -479,46 +513,43 @@ function mostrarAlerta(msg, tipo = "erro") {
     }, 3500);
 }
 
-document.getElementById("formFiltroData").addEventListener("submit", function(e){
+const formFiltro = document.getElementById("formFiltroData");
 
-    const inputDe = document.getElementById("dataDe");
-    const inputAte = document.getElementById("dataAte");
+    if (formFiltro) {
 
-    let de = inputDe.value;
-    let ate = inputAte.value;
+        formFiltro.addEventListener("submit", function(e){
 
-    if(de === "" && ate === ""){
-        
-        const hoje = new Date();
+            const inputDe = document.getElementById("dataDe");
+            const inputAte = document.getElementById("dataAte");
 
-        const ano = hoje.getFullYear();
-        const mes = String(hoje.getMonth() + 1).padStart(2,"0");
-        const dia = String(hoje.getDate()).padStart(2,"0");
+            const de = inputDe.value;
+            const ate = inputAte.value;
 
-        const primeiroDia = `${ano}-${mes}-01`;
-        const hojeFormatado = `${ano}-${mes}-${dia}`;
+            if(de === "" && ate === ""){
+                e.preventDefault();
+                window.location.href = window.location.pathname;
+                return;
+            }
 
-        inputDe.value = primeiroDia;
-        inputAte.value = hojeFormatado;
+            // Se preencheu só um campo
+            if(de !== "" && ate === ""){
+                e.preventDefault();
+                mostrarAlerta("Preencha a data Até.");
+                return;
+            }
 
-        return;
-    }
+            // Se preencheu só um campo
+            if(de === "" && ate !== ""){
+                e.preventDefault();
+                mostrarAlerta("Preencha a data De.");
+                return;
+            }
+        });
+}
 
-    // Se preencheu só um campo
-    if(de !== "" && ate === ""){
-        e.preventDefault();
-        mostrarAlerta("Preencha a data Até.");
-        return;
-    }
 
-    // Se preencheu só um campo
-    if(de === "" && ate !== ""){
-        e.preventDefault();
-        mostrarAlerta("Preencha a data De.");
-        return;
-    }
 
-});
+    
 
 function abrirNovoCardGlobal(){
     // Fecha menu lateral
@@ -622,20 +653,24 @@ function recalcularTotalGlobal() {
 }
 const board = document.querySelector('.board');
 
-board.addEventListener('wheel', function (e) {
+if (board) {
 
-    const isInsideColumn = e.target.closest('.lista-cards');
+    board.addEventListener('wheel', function (e) {
 
-    // Se estiver dentro da coluna → deixa scroll normal (vertical)
-    if (isInsideColumn) {
-        return; // não faz nada
-    }
+        const isInsideColumn = e.target.closest('.lista-cards');
 
-    // Se NÃO estiver dentro da coluna → transforma em scroll horizontal
-    e.preventDefault();
-    board.scrollLeft += e.deltaY;
+        // Se estiver dentro da coluna → deixa scroll normal (vertical)
+        if (isInsideColumn) {
+            return;
+        }
 
-}, { passive: false });
+        // Se NÃO estiver dentro da coluna → transforma em scroll horizontal
+        e.preventDefault();
+        board.scrollLeft += e.deltaY;
+
+    }, { passive: false });
+
+}
 
 function abrirBuscaCard() {
     // Fecha o menu do Bootstrap
@@ -696,11 +731,29 @@ let cardEmDetalhes = null;
 
 function abrirDetalhesCard(id){
 
+    cardEmDetalhes = id;
+
     const card = document.querySelector(`[data-id="${id}"]`);
 
     const titulo = card.querySelector(".titulo-card").innerText;
     const dataCriacao = card.querySelector(".data-card").innerText.replace("📅 ", "");
     const vencimento = card.dataset.vencimento;
+
+    const conclusaoData = card.getAttribute("data-conclusao");
+    const coluna = card.dataset.coluna;
+
+    const descricao = card.dataset.descricao || "";
+
+    const responsavel = card.dataset.responsavel || "-";
+    const prioridade = card.dataset.prioridade || "normal";
+    const tags = card.dataset.tags || "Nenhuma tag";
+
+    
+    const conclusao =
+        coluna === "CO"
+            ? (conclusaoData || "Concluído (sem data registrada)")
+            : (conclusaoData || "Ainda não concluído");
+   
 
     // 👉 converter datas
     const hoje = new Date();
@@ -721,10 +774,51 @@ function abrirDetalhesCard(id){
         statusPrazo = "🟢 No prazo";
     }
 
+    document.getElementById("detalheResponsavel").innerText = responsavel;
+
+    let prioridadeTexto = "";
+
+    if (prioridade === "alta") {
+        prioridadeTexto = "🔴 Alta";
+    } else if (prioridade === "media") {
+        prioridadeTexto = "🟡 Média";
+    } else if (prioridade === "baixa") {
+        prioridadeTexto = "🟢 Baixa";
+    } else {
+        prioridadeTexto = "⚪ Normal";
+    }
+
+    document.getElementById("detalhePrioridade").innerText = prioridadeTexto;
+
+    // TAGS
+    const detalheTags = document.getElementById("detalheTags");
+
+    if (tags.trim() !== "" && tags !== "Nenhuma tag") {
+        detalheTags.innerHTML = tags
+            .split(",")
+            .map(tag => `<span class="tag">${tag.trim()}</span>`)
+            .join("");
+    } else {
+        detalheTags.innerHTML = "<span>Nenhuma tag</span>";
+    }
+
+
+    document.getElementById("detalhesDescricao").value = descricao;
+
+    document.getElementById("descricaoTexto").innerText =
+        descricao || "Nenhuma descrição adicionada";
+
+    document.getElementById("detalhesDescricao").value = descricao;
+
+    document.getElementById("descricaoTexto").style.display = "block";
+    document.getElementById("areaEdicaoDescricao").style.display = "none";
+
     // 👉 preencher modal
     document.getElementById("detalheTitulo").innerText = titulo;
     document.getElementById("detalheData").innerText = dataCriacao;
     document.getElementById("detalheVencimento").innerText = vencimento;
+    console.log(document.getElementById("detalheConclusao"));
+    document.getElementById("detalheConclusao").innerText = conclusao;
 
     // 👇 AQUI entra o novo status
     document.getElementById("detalheStatus").innerText = statusPrazo;
@@ -740,7 +834,9 @@ function fecharDetalhesCard() {
 
 // Esta função APENAS abre o modal para você escolher a opção
 function abrirFiltro(){
-    // Primeiro, fecha o menu lateral do Bootstrap se ele estiver aberto
+
+    console.log("clicou filtro");
+
     const menuLateral = document.getElementById("menuLateral");
     if (menuLateral) {
         const bsOffcanvas = bootstrap.Offcanvas.getInstance(menuLateral);
@@ -749,12 +845,11 @@ function abrirFiltro(){
         }
     }
 
-    // Abre o modal de filtro
     const modal = document.getElementById("modalFiltro");
+
+    console.log(modal);
+
     modal.style.display = "flex";
-    
-    // Garante que o select esteja limpo e pronto para uso
-    document.getElementById("tipoFiltro").focus();
 }
 
 function fecharFiltro(){
@@ -866,7 +961,9 @@ function fecharSugestao(){
 }
 
 function enviarSugestao(){
-
+    const btn = document.querySelector(".btn-enviar-email");
+    const texto = document.querySelector(".texto-btn");
+    const spinner = btn?.querySelector(".spinner");
     
     const nome = document.getElementById("nomeSugestao").value.trim();
     const email = document.getElementById("emailSugestao").value.trim();
@@ -880,33 +977,52 @@ function enviarSugestao(){
 
     const csrf = document.querySelector("[name=csrfmiddlewaretoken]").value;
 
-    fetch("/sugestao/enviar/", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrf
-        },
-        body: JSON.stringify({
-            nome,
-            email,
-            tipo,
-            descricao
+    if (btn && texto && spinner){
+        btn.disabled = true;
+        btn.classList.add("enviando");
+        texto.innerText = "Enviando";
+    }
+
+    setTimeout(() => {
+
+        fetch("/sugestao/enviar/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrf
+            },
+            body: JSON.stringify({
+                nome,
+                email,
+                tipo,
+                descricao
+            })
         })
-    })
-    .then(res => res.json())
-    .then(data => {
-        
-        if (data.status === "ok"){
-            mostrarAlerta("✅ Sugestão enviada com sucesso!", "sucesso");
-            fecharSugestao();
-        }else{
-            mostrarAlerta("❌ Erro ao enviar sugestão");
-        }
-    })
-    .catch(() => {
-        mostrarAlerta("❌ Erro na comunicação com o servidor.")
-    });
+        .then(res => res.json())
+        .then(data => {
+
+            if (data.status === "ok"){
+                mostrarAlerta("✅ Sugestão enviada com sucesso!", "sucesso");
+            }else{
+                mostrarAlerta("❌ Erro ao enviar sugestão");
+            }
+        })
+
+        .catch(() => {
+            mostrarAlerta("❌ Erro na comunicação com o servidor.");
+        })
+
+        .finally(() => {
+            if (btn && texto && spinner){
+                btn.disabled = false;
+                btn.classList.remove("enviando");
+                texto.innerText = "Enviar";
+            }
+        });
+
+    }, 3000);
 }
+
 function exportarPDF(){
 
     const elemento = document.querySelector(".board");
@@ -922,9 +1038,15 @@ function exportarPDF(){
     html2pdf().set(opcoes).from(elemento).save();
 }
 
-document.getElementById("btnExportarPdf").addEventListener("click", function () {
-    document.getElementById("modalConfirmarPDF").style.display = "flex";
-});
+const btnExportarPdf = document.getElementById("btnExportarPdf");
+
+if (btnExportarPdf) {
+
+    btnExportarPdf.addEventListener("click", function () {
+        document.getElementById("modalConfirmarPDF").style.display = "flex";
+    });
+
+}
 
 function fecharConfirmarPDF(){
     document.getElementById("modalConfirmarPDF").style.display = "none";
@@ -974,4 +1096,785 @@ async function confirmarExportacaoPDF(){
         btn.disabled = false;
         btn.innerText = "📄 Exportar PDF";
     }
+}
+
+function salvarDescricaoCard(){
+
+    const descricao =
+        document.getElementById("detalhesDescricao").value.trim();
+
+    const csrf =
+        document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+    fetch(`/card/${cardEmDetalhes}/descricao/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrf
+        },
+        body: JSON.stringify({
+            descricao: descricao
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        if(data.status === "ok"){
+
+            document.getElementById("descricaoTexto").innerText =
+                descricao || "Nenhuma descrição adicionada.";
+
+            document.getElementById("descricaoTexto").style.display = "block";
+
+            document.getElementById("areaEdicaoDescricao").style.display = "none";
+
+            const card = document.querySelector(
+                `[data-id="${cardEmDetalhes}"]`
+            );
+
+            if (card){
+                card.dataset.descricao = descricao;
+            }
+
+            mostrarAlerta(
+                "✅ Descrição salva com sucesso",
+                "sucesso"
+            );
+        }
+
+    })
+    .catch(error => {
+        console.error(error);
+        mostrarAlerta("❌ Erro ao salvar descrição");
+    });
+}
+
+function editarDescricaoCard(){
+    const textoAtual = 
+        document.getElementById("descricaoTexto").innerText;
+
+    document.getElementById("detalhesDescricao").value = 
+    textoAtual === "Nenhuma descrição adicionada."
+    ? ""
+    : textoAtual;
+
+    document.getElementById("descricaoTexto").style.display = "none";
+    document.getElementById("areaEdicaoDescricao").style.display = "block";
+
+
+}
+
+function cancelarEdicaoDescricao(){
+
+    document.getElementById("descricaoTexto").style.display = "block";
+
+    document.getElementById("areaEdicaoDescricao").style.display = "none";
+}
+
+
+function somarConcluidosHoje(qtd = 1) {
+    const span = document.getElementById("concluidosHojeNumero");
+    if (span) {
+        let atual = parseInt(span.innerText.trim()) || 0;
+        span.innerText = atual + qtd;
+    }
+}
+function diminuirConcluidosHoje(qtd = 1) {
+    const span = document.getElementById("concluidosHojeNumero");
+    if (span) {
+        let atual = parseInt(span.innerText.trim()) || 0;
+        span.innerText = Math.max(0, atual - qtd);
+    }
+}
+
+// 🔥 FUNÇÃO GLOBAL: Chame esta função onde o seu script de arrastar atualiza o banco
+function verificarMudancaColunaMenu(colunaOrigem, colunaDestino) {
+    if (colunaDestino === "CO" && colunaOrigem !== "CO") {
+        somarConcluidosHoje(1);
+    } else if (colunaOrigem === "CO" && colunaDestino !== "CO") {
+        diminuirConcluidosHoje(1);
+    }
+}
+
+let wallpaperSelecionado = "montanha.jpg";
+
+function selecionarWallpaper(imagem){
+
+    wallpaperSelecionado = imagem;
+
+    document.querySelector(".board").style.backgroundImage =
+        `url('/static/img/${imagem}')`;
+}
+
+async function salvarWallpaper(){
+
+    console.log("Salvando:", wallpaperSelecionado);
+
+    const resposta = await fetch("/alterar-wallpaper/",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json",
+            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]")?.value
+        },
+        body: JSON.stringify({
+            imagem: wallpaperSelecionado
+        })
+    });
+
+    console.log(resposta.status);
+
+    fecharWallpaper();
+}
+
+
+async function alterarWallpaper(imagem) {
+
+    document.querySelector('.board').style.backgroundImage = `url('/static/img/${imagem}')`;
+
+    await fetch("/alterar-wallpaper/",{
+        method: "POST",
+        headers:{
+            "Content-Type":"application/json",
+            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]")?.value
+        },
+        body: JSON.stringify({
+            imagem:imagem
+        })
+    });
+    fecharWallpaper();
+}
+function abrirWallpaper() {
+    document.getElementById("modalWallpaper").style.display = "flex";
+}
+
+function fecharWallpaper() {
+    document.getElementById("modalWallpaper").style.display = "none";
+}
+
+let modalAtivo = false;
+let timerInatividade;
+let timerAviso;
+
+// 5 minutos em milissegundos (5 minutos * 60 segundos * 1000 milissegundos)
+const TEMPO_LOGOUT = 5 * 60 * 1000;      
+// 2 minutos de tolerância (para fechar o sistema cravado em 7 minutos totais)
+const TEMPO_AVISO = 2 * 60 * 1000;     
+
+function resetarInatividade() {
+    if (modalAtivo) return;
+
+    // Limpa ambos os timers para reiniciar a contagem do zero
+    clearTimeout(timerInatividade);
+    clearTimeout(timerAviso);
+
+    // Agenda APENAS a aparição do modal de aviso
+    timerAviso = setTimeout(() => {
+        abrirModalIdle();
+    }, TEMPO_AVISO);
+}
+
+function abrirModalIdle() {
+    modalAtivo = true;
+    document.getElementById("modalIdle").style.display = "flex";
+
+    // CORREÇÃO CRÍTICA: O timer de expulsão só começa a contar AGORA, 
+    // dando os 10 segundos para o usuário clicar em "Continuar logado"
+    timerInatividade = setTimeout(() => {
+        logoutAgora();
+    }, TEMPO_LOGOUT);
+}
+
+function fecharModalIdle() {
+    modalAtivo = false;
+    document.getElementById("modalIdle").style.display = "none";
+    
+    // Limpa o timer de expulsão já que o usuário interagiu a tempo
+    clearTimeout(timerInatividade); 
+}
+
+function continuarLogado() {
+    fecharModalIdle();
+    resetarInatividade(); // Reinicia o ciclo de contagem principal
+}
+
+function logoutAgora() {
+    window.location.href = "/logout/";
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    window.addEventListener("mousemove", resetarInatividade);
+    window.addEventListener("keydown", resetarInatividade);
+    window.addEventListener("click", resetarInatividade);
+    window.addEventListener("scroll", resetarInatividade);
+
+    resetarInatividade();
+});
+
+
+// ==========================
+// LISTA DE USUÁRIOS
+// ==========================
+
+function abrirListaUsuarios(){
+    // 1. Força o fechamento do menu lateral do Bootstrap
+    const menuLateral = document.getElementById('menuLateral');
+    if (menuLateral) {
+        const bsOffcanvas = bootstrap.Offcanvas.getInstance(menuLateral);
+        if (bsOffcanvas) {
+            bsOffcanvas.hide();
+        }
+    }
+
+    // 2. Garante que os OUTROS modais estejam fechados para não dar conflito de cliques
+    const modalNovo = document.getElementById("modalNovoUsuario");
+    const modalPerfil = document.getElementById("modalPerfilUsuario");
+    if (modalNovo) modalNovo.style.display = "none";
+    if (modalPerfil) modalPerfil.style.display = "none";
+
+    // 3. Abre o modal correto (Lista de Usuários)
+    const modalLista = document.getElementById("modalListaUsuarios");
+    if (modalLista) {
+        modalLista.style.display = "flex";
+    }
+
+    // 4. Limpa o input de pesquisa e força o foco nele após 150ms (tempo do menu sumir)
+    const inputPesquisa = document.getElementById("pesquisaUsuario");
+    if (inputPesquisa) {
+        inputPesquisa.value = "";
+        setTimeout(() => {
+            inputPesquisa.focus();
+        }, 150);
+    }
+
+    // 5. Executa o carregamento de forma segura (se falhar, não quebra a tela)
+    try {
+        if (typeof carregarUsuarios === "function") {
+            carregarUsuarios();
+        }
+    } catch (error) {
+        console.error("Erro ao rodar carregarUsuarios():", error);
+    }
+}
+
+function fecharListaUsuarios(){
+
+    document.getElementById("modalListaUsuarios").style.display="none";
+
+}
+
+
+// ==========================
+// NOVO USUÁRIO
+// ==========================
+
+let modoUsuario = "novo"; // "novo" ou "editar"
+let usuarioEditandoId = null;
+
+function abrirNovoUsuario(){
+
+    modoUsuario = "novo";
+    usuarioEditandoId = null;
+
+    document.getElementById("tituloModalUsuario").textContent = "Novo Usuário";
+    document.querySelector(".btn-salvar-usuario").textContent = "Cadastrar";
+
+    document.getElementById("containerSenhaUsuario").style.display = "block";
+    document.getElementById("avisoAlterarSenha").style.display = "none";
+    document.querySelector(".informacoes-usuario").style.display = "none";
+
+    document.getElementById("modalNovoUsuario").style.display = "flex";
+}
+
+function fecharNovoUsuario() {
+
+    document.getElementById("modalNovoUsuario").style.display = "none";
+}
+function carregarUsuarios() {
+
+    const filtro = document.getElementById("filtroStatusUsuario").value;
+
+    fetch("/usuarios/listar/")
+        .then(res => res.json())
+        .then(data => {
+
+            const container = document.getElementById("listaUsuarios");
+            container.innerHTML = "";
+
+            let usuarios = data.usuarios;
+
+            if (filtro === "ativos"){
+                usuarios = usuarios.filter(u => u.ativo)
+                
+            }
+
+            if (filtro === "inativos") {
+                usuarios = usuarios.filter(u => !u.ativo);
+            }
+
+            if (usuarios.length === 0){
+                let mensagem = "Nenhum usuário encontrado";
+
+                if (filtro === "ativos") {
+                mensagem = "Não há usuários ativos no momento.";
+            } else if (filtro === "inativos") {
+                mensagem = "Não há usuários inativos no momento.";
+            }
+
+            container.innerHTML = `
+                    <div class="mensagem-vazia">
+                        ${mensagem}
+                    </div>
+                `;
+
+                return;
+            }
+
+            usuarios.forEach(user => {
+
+                const iniciais = (user.nome || user.usuario)
+                .split(" ")
+                .map(nome => nome[0])
+                .slice(0,2)
+                .join("")
+                .toUpperCase();
+            
+
+            container.innerHTML += `
+                <div class="usuario-card">
+
+                    <div class="usuario-avatar">
+                        ${iniciais}
+                    </div>
+
+                    <div class="usuario-coluna-esquerda">
+
+                        <h3>${user.nome}</h3>
+
+                        <p>
+                            <strong>Usuário:</strong> ${user.usuario}
+                        </p>
+
+                        <p>
+                            <strong>E-mail:</strong> ${user.email}
+                        </p>
+
+                    </div>
+
+                    <div class="usuario-coluna-direita">
+
+                        <p>
+                            🛡 Perfil de acesso: ${user.administrador ? "Administrador" : "Usuário"}
+                        </p>
+
+                        <p>
+                            🟢 Status: ${user.ativo ? "Ativo" : "Inativo"}
+                        </p>
+
+                        <p>
+                            📅 Conta criada em: ${user.data_criacao}
+                        </p>
+
+                        <p>
+                            🕒 Último acesso: ${user.ultimo_login}
+                        </p>
+
+                    </div>
+
+                    <div class="acoes-usuario">
+                        <button
+                            class="btn-menu-usuario"
+                            onclick="abrirMenuUsuario(event, ${user.id})">
+                            ⋮
+                        </button>
+
+                        <div
+                            id="menu-${user.id}"
+                            class="menu-usuario">
+
+                            <button onclick="editarUsuario(${user.id})">
+                                ✏ Editar usuário
+                            </button>
+
+                            <button onclick="abrirModalPerfil()">
+                                🛡 Perfil de acesso
+                            </button>
+
+                            <button onclick="excluirUsuario(${user.id})">
+                               🗑️ Excluir Usuário
+                            </button>
+
+                        </div>
+
+                    </div>
+                `;
+
+            });
+        });
+}
+
+function alterarPerfilUsuario(id){
+
+    const csrf =
+        document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+    fetch(`/usuarios/${id}/alterar-perfil/`, {
+
+        method: "POST",
+
+        headers: {
+            "X-CSRFToken": csrf
+        }
+
+    })
+
+    .then(res => res.json())
+
+    .then(data => {
+
+        if(data.status === "ok"){
+
+            carregarUsuarios();
+
+        }
+
+    });
+
+}
+
+function abrirMenuUsuario(event, id){
+
+    event.stopPropagation();
+
+    document.querySelectorAll(".menu-usuario").forEach(menu=>{
+        menu.style.display="none";
+    });
+
+    const menu = document.getElementById(`menu-${id}`);
+
+    menu.style.display =
+        menu.style.display === "block"
+        ? "none"
+        : "block";
+}
+
+document.addEventListener("click",()=>{
+
+    document.querySelectorAll(".menu-usuario").forEach(menu=>{
+
+        menu.style.display="none";
+
+    });
+
+});
+
+let debounceTimer;
+
+function filtrarUsuarios(){
+    // Limpa o timer anterior para esperar o usuário parar de digitar
+    clearTimeout(debounceTimer)
+
+    debounceTimer = setTimeout(() =>{
+        const termoPesquisa = document.getElementById("pesquisaUsuario").value.toLowerCase().trim();
+        const statusFiltro = document.getElementById("filtroStatusUsuario").value;
+
+        filtrarListaNaTela(termoPesquisa, statusFiltro);
+    },300);
+}
+
+// Função auxiliar caso você queira filtrar os elementos HTML que já estão na tela
+function filtrarListaNaTela(termo, status) {
+    const lista = document.getElementById("listaUsuarios");
+    
+    // CORREÇÃO: Pega TODOS os elementos filhos diretos dentro da div listaUsuarios
+    const itens = lista.children; 
+
+    // Como lista.children não é uma Array pura, usamos Array.from para poder usar o forEach
+    Array.from(itens).forEach(item => {
+        // Pega todo o texto visível dentro da linha do usuário (Nome, email, etc.)
+        const textoItem = item.textContent.toLowerCase();
+        
+        // Verifica se o status bate (procura por atributos comuns como data-status ou classes)
+        // Se você não usa controle de status ativo/inativo no elemento ainda, ele vai ignorar essa parte
+        const statusItem = item.getAttribute("data-status") || "todos"; 
+
+        const bateComTermo = textoItem.includes(termo);
+        const bateComStatus = status === "todos" || statusItem === status || item.classList.contains(status);
+
+        // Aplica o filtro visual na tela na mesma hora
+        if (bateComTermo && bateComStatus) {
+            item.style.display = ""; // Mostra o usuário
+        } else {
+            item.style.display = "none"; // Esconde o usuário
+        }
+    });
+}
+async function verificarUsername(){
+
+    const username = document.getElementById("usuarioUsuario").value.trim();
+
+    const resposta = await fetch(
+        `/usuarios/verificar-username/?username=${encodeURIComponent(username)}`
+    );
+
+    const data = await resposta.json();
+
+    return !data.existe;
+}
+
+async function salvarNovoUsuario() {
+    // Captura os elementos do formulário
+    const nome = document.getElementById("nomeUsuario").value.trim();
+    const usuario = document.getElementById("usuarioUsuario").value.trim();
+    const email = document.getElementById("emailUsuario").value.trim();
+    const senha = document.getElementById("senhaUsuario").value;
+    const confirmarSenha = document.getElementById("confirmarSenhaUsuario").value;
+    const eAdmin = document.getElementById("usuarioAdminPerfil").checked;
+
+    // Campos obrigatórios
+    if (!nome || !usuario || !email) {
+        mostrarAlerta("Por favor, preencha todos os campos obrigatórios.", "erro");
+        return;
+    }
+
+    // Apenas no cadastro exige senha
+    if (modoUsuario === "novo") {
+
+        if (!senha || !confirmarSenha) {
+            mostrarAlerta("Informe a senha.", "erro");
+            return;
+        }
+
+        if (senha !== confirmarSenha) {
+            mostrarAlerta("As senhas informadas não coincidem!", "erro");
+            return;
+        }
+
+        const usernameValido = await verificarUsername();
+
+        if (!usernameValido) {
+            mostrarAlerta("Este nome de usuário já está em uso.", "erro");
+            return;
+        }
+    }
+
+    // 4. Captura do Token CSRF obrigatório do Django
+    const csrfInput = document.querySelector("[name=csrfmiddlewaretoken]");
+    if (!csrfInput) {
+        mostrarAlerta("Erro técnico: Token CSRF não encontrado na página.","erro");
+        return;
+    }
+    const csrf = csrfInput.value;
+
+    let url;
+    let body;
+
+    if (modoUsuario === "novo") {
+
+        url = "/usuarios/criar/";
+
+        body = {
+            nome,
+            username: usuario,
+            email,
+            senha,
+            admin: eAdmin
+        };
+
+    } else {
+
+        url = `/usuarios/${usuarioEditandoId}/editar/`;
+
+        body = {
+            nome,
+            username: usuario,
+            email,
+            admin: eAdmin,
+            ativo: document.querySelector('input[name="statusUsuario"]:checked').value === "ativo"
+        };
+
+    }
+    try {
+        const resposta = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrf
+            },
+            body: JSON.stringify(body)
+        });
+        
+
+        const data = await resposta.json();
+
+        if (data.status === "ok" || data.success) {
+            mostrarAlerta(
+                modoUsuario === "novo"
+                    ? "Usuário cadastrado com sucesso!"
+                    : "Usuário atualizado com sucesso!",
+                "sucesso"
+            );
+            
+            // Limpa o formulário de cadastro
+            document.getElementById("nomeUsuario").value = "";
+            document.getElementById("usuarioUsuario").value = "";
+            document.getElementById("emailUsuario").value = "";
+            document.getElementById("senhaUsuario").value = "";
+            document.getElementById("confirmarSenhaUsuario").value = "";
+            document.getElementById("usuarioAdminPerfil").checked = false;
+            document.getElementById("usuarioComumPerfil").checked = true;
+
+            carregarUsuarios();
+        } else {
+            mostrarAlerta(
+                (modoUsuario === "novo"
+                    ? "Erro ao cadastrar usuário: "
+                    : "Erro ao atualizar usuário: ")
+                + (data.msg || "Erro desconhecido"),
+                "erro"
+            );
+        }
+
+    } catch (error) {
+        console.error("Erro na requisição de cadastro:", error);
+        mostrarAlerta("Houve uma falha de comunicação com o servidor.","erro");
+    }
+}
+
+function abrirModalPerfil() {
+    document.getElementById("modalPerfilAcesso").style.display = "flex";
+}
+
+function fecharModalPerfil() {
+    document.getElementById("modalPerfilAcesso").style.display = "none";
+}
+
+async function editarUsuario(id){
+
+    try{
+
+        modoUsuario = "editar";
+        usuarioEditandoId = id;
+
+        const resposta = await fetch(`/usuarios/${id}/`);
+
+        const data = await resposta.json();
+
+        if(data.status !== "ok"){
+            mostrarAlerta(data.msg, "erro");
+            return;
+        }
+
+        const usuario = data.usuario;
+
+        document.querySelector(".informacoes-usuario").style.display = "block";
+
+        document.querySelector('input[name="statusUsuario"][value="ativo"]').checked =
+            usuario.ativo;
+
+        document.querySelector('input[name="statusUsuario"][value="inativo"]').checked =
+            !usuario.ativo;
+
+        document.getElementById("tituloModalUsuario").textContent =
+        "Editar Usuário";
+
+        
+        // Editar usuário
+        document.querySelector(".btn-salvar-usuario").textContent = "Salvar";
+
+        document.getElementById("modalNovoUsuario").style.display = "flex";
+
+        document.getElementById("avisoAlterarSenha").style.display = "block";
+
+        document.getElementById("dataCriacaoUsuario").textContent =
+            usuario.data_criacao;
+
+        document.getElementById("ultimoLoginUsuario").textContent =
+            usuario.ultimo_login;
+
+     
+        document.getElementById("containerSenhaUsuario").style.display = "none";
+
+        document.getElementById("nomeUsuario").value = usuario.nome;
+        document.getElementById("usuarioUsuario").value = usuario.username;
+        document.getElementById("emailUsuario").value = usuario.email;
+
+        // senha não deve ser carregada
+        document.getElementById("senhaUsuario").value = "";
+        document.getElementById("confirmarSenhaUsuario").value = "";
+
+        
+        document.getElementById("usuarioAdminPerfil").checked = usuario.administrador;
+        document.getElementById("usuarioComumPerfil").checked = !usuario.administrador;
+
+        
+
+    }catch(erro){
+
+        console.error(erro);
+
+        mostrarAlerta(
+            "Erro ao carregar os dados do usuário.",
+            "erro"
+        );
+
+    }
+
+}
+
+let usuarioExcluirId = null;
+
+function excluirUsuario(id) {
+
+    usuarioExcluirId = id;
+
+    document.getElementById("tituloConfirmacao").textContent =
+        "Excluir usuário";
+
+    document.getElementById("mensagemConfirmacao").textContent =
+        "Tem certeza que deseja excluir este usuário? Esta ação não poderá ser desfeita.";
+
+    document.getElementById("btnConfirmarAcao").onclick =
+        confirmarExclusaoUsuario;
+
+    document.getElementById("box-confirmar").style.display = "flex";
+}
+
+async function confirmarExclusaoUsuario() {
+    const csrf = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+    try {
+        const resposta = await fetch(`/usuarios/${usuarioExcluirId}/excluir/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": csrf
+            }
+        });
+
+        // CORREÇÃO DE SEGURANÇA: Evita travar o JS se o Django falhar
+        if (!resposta.ok) {
+            mostrarAlerta(`Erro no servidor: ${resposta.status}`, "erro");
+            return;
+        }
+
+        const data = await resposta.json();
+
+        if (data.status === "ok") {
+            mostrarAlerta("Usuário excluído com sucesso!", "sucesso");
+            fecharConfirmacao();
+            carregarUsuarios();
+        } else {
+            mostrarAlerta(data.msg || "Não foi possível excluir o usuário.", "erro");
+        }
+    } catch (erro) {
+        console.error("Erro ao deletar:", erro);
+        mostrarAlerta("Falha na comunicação com o servidor.", "erro");
+    }
+}
+
+function fecharConfirmacao() {
+    // Esconde o box de confirmação voltando o display para none
+    document.getElementById("box-confirmar").style.display = "none";
+    
+    // Boa prática: Reseta a variável global por segurança
+    usuarioExcluirId = null; 
 }

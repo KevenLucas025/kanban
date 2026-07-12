@@ -106,7 +106,11 @@
                             data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
                             data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
                             data-status="{{ card.status }}"
-                            data-coluna="{{ card.coluna }}">
+                            data-coluna="{{ card.coluna }}"
+                            data-descricao="{{ card.descricao|default:'' }}"
+                            data-prioridade="{{ card.prioridade|default:'' }}"
+                            data-responsavel="{{ card.responsavel|default:'' }}"
+                            data-tags="{{ card.tags|default:'' }}">
                              
                             <div class="topo-card">
                                 <span class="status {{ card.status }}"></span>
@@ -141,7 +145,11 @@
                             data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
                             data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
                             data-status="{{ card.status }}"
-                            data-coluna="{{ card.coluna }}">
+                            data-coluna="{{ card.coluna }}"
+                            data-descricao="{{ card.descricao|default:'' }}"
+                            data-prioridade="{{ card.prioridade|default:'' }}"
+                            data-responsavel="{{ card.responsavel|default:'' }}"
+                            data-tags="{{ card.tags|default:'' }}">
 
                             <div class="topo-card">
                                 <span class="status {{ card.status }}"></span>
@@ -176,7 +184,11 @@
                             data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
                             data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
                             data-status="{{ card.status }}"
-                            data-coluna="{{ card.coluna }}">
+                            data-coluna="{{ card.coluna }}"
+                            data-descricao="{{ card.descricao|default:'' }}"
+                            data-prioridade="{{ card.prioridade|default:'' }}"
+                            data-responsavel="{{ card.responsavel|default:'' }}"
+                            data-tags="{{ card.tags|default:'' }}">
 
                             <div class="topo-card">
                                 <span class="status {{ card.status }}"></span>
@@ -211,7 +223,11 @@
                             data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
                             data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
                             data-status="{{ card.status }}"
-                            data-coluna="{{ card.coluna }}">
+                            data-coluna="{{ card.coluna }}"
+                            data-descricao="{{ card.descricao|default:'' }}"
+                            data-prioridade="{{ card.prioridade|default:'' }}"
+                            data-responsavel="{{ card.responsavel|default:'' }}"
+                            data-tags="{{ card.tags|default:'' }}">
 
                             <div class="topo-card">
                                 <span class="status {{ card.status }}"></span>
@@ -246,7 +262,11 @@
                             data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
                             data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
                             data-status="{{ card.status }}"
-                            data-coluna="{{ card.coluna }}">
+                            data-coluna="{{ card.coluna }}"
+                            data-descricao="{{ card.descricao|default:'' }}"
+                            data-prioridade="{{ card.prioridade|default:'' }}"
+                            data-responsavel="{{ card.responsavel|default:'' }}"
+                            data-tags="{{ card.tags|default:'' }}">
                             
                             <div class="topo-card">
                                 <span class="status {{ card.status }}"></span>
@@ -281,7 +301,11 @@
                             data-vencimento="{{ card.data_vencimento|date:'d/m/Y' }}"
                             data-conclusao="{{ card.data_conclusao|date:'d/m/Y' }}"
                             data-status="{{ card.status }}"
-                            data-coluna="{{ card.coluna }}">
+                            data-coluna="{{ card.coluna }}"
+                            data-descricao="{{ card.descricao|default:'' }}"
+                            data-prioridade="{{ card.prioridade|default:'' }}"
+                            data-responsavel="{{ card.responsavel|default:'' }}"
+                            data-tags="{{ card.tags|default:'' }}">
 
                             <div class="topo-card">
                                 <span class="status {{ card.status }}"></span>
@@ -367,9 +391,42 @@
 </div>
 
 <div id="modalNovoCard" class="modal-confirmar">
-    <div class="box-confirmar">
+    <div class="box-confirmar box-novo-card">
+
         <h3>Novo Card</h3>
-        <input type="text" id="nomeNovoCard" placeholder="Digite o nome do card" style="width:90%; padding:12px; margin-top:15px; border:1px solid #d1d5db; border-radius:10px; font-size:15px;">
+
+        <input 
+            type="text"
+            id="nomeNovoCard" 
+            placeholder="Título do card">
+        <textarea 
+            id="descricaoNovoCard"
+            rows="4"
+            placeholder="Descrição"></textarea>
+            <div class="linha-prioridade">
+
+                <label for="prioridadeNovoCard">
+                    Prioridade
+                </label>
+
+                <select id="prioridadeNovoCard">
+                    <option value="normal" selected>⚪ Normal</option>
+                    <option value="baixa">🟢 Baixa</option>
+                    <option value="media">🟡 Média</option>
+                    <option value="alta">🔴 Alta</option>
+                </select>
+
+            </div>
+        <input
+            type="text"
+            id="responsavelNovoCard"
+            placeholder="Responsável">
+
+        <input
+            type="text"
+            id="tagsNovoCard"
+            placeholder="Tags (separadas por vírgula)">
+
         <div class="acoes-modal" style="margin-top:20px;">
             <button onclick="fecharNovoCard()" class="btn-cancelar-card-individual">Cancelar</button>
             <button onclick="salvarNovoCard()" class="btn-salvar-card-individual">Salvar</button>
@@ -446,11 +503,12 @@
         <button onclick="fecharDetalhesCard()" class="btn-fechar-modal">✕</button>
         <h2 id="detalheTitulo" class="titulo-detalhe">Título do Card</h2>
         <p class="info-secundaria"><strong>📅 Criado em:</strong> <span id="detalheData"></span></p>
-        <p class="info-secundaria"><strong>📌 Status:</strong> <span id="detalheStatus">A Fazer</span></p>
-        <p class="info-secundaria"><strong>👤 Responsável:</strong> <span id="detalheResponsavel">Keven Lucas da Silva Jesus</span></p>
-        <p class="info-secundaria"><strong>⏰ Data de Vencimento:</strong> <span id="detalheVencimento">05/05/2026</span></p>
-        <p class="info-secundaria"><strong>✅ Data de Conclusão:</strong> <span id="detalheConclusao">Ainda não concluído</span></p>
-        <p class="info-secundaria"><strong>🔥 Prioridade:</strong> <span id="detalhePrioridade">Alta</span></p>
+        <p class="info-secundaria"><strong>📌 Status:</strong> <span id="detalheStatus"></span></p>
+        <p class="info-secundaria"><strong>👤 Responsável:</strong> <span id="detalheResponsavel"></span></p>
+        <p class="info-secundaria"><strong>⏰ Data de Vencimento:</strong> <span id="detalheVencimento"></span></p>
+        <p class="info-secundaria"><strong>✅ Data de Conclusão:</strong> <span id="detalheConclusao"></span></p>
+        <p class="info-secundaria"><strong>🔥 Prioridade:</strong> <span id="detalhePrioridade"></span></p>
+        <p class="info-secundaria"><strong>🏷️ Tags:</strong> <span id="detalheTags"></span></p>
         <hr>
         <div class="corpo-detalhes">
             <div class="cabecalho-descricao">
@@ -565,5 +623,335 @@
         </button>
     </div>
 </div>
+
+<div id="modalNovoUsuario" class="modal-overlay">
+
+    <div class="modal-novo-usuario">
+
+        <button
+            onclick="fecharNovoUsuario()"
+            class="btn-fechar-modal-usuarios">
+            ✕
+        </button>
+
+        <div class="modal-content-editar-usuario">
+
+            <div class="lado-esquerdo-editar-usuario">
+
+                <h2 id="tituloModalUsuario">Novo Usuário</h2>
+
+                <div class="campo-nome-completo">
+                    <label for="nomeUsuario">Nome Completo</label>
+                    <input id="nomeUsuario" placeholder="Digite o nome completo">
+                </div>
+
+                <div class="campo-nome-usuario">
+                    <label for="usuarioUsuario">Usuário</label>
+                    <input id="usuarioUsuario" placeholder="Digite o usuário">
+                </div>
+
+                <div class="campo-email-usuario">
+                    <label for="emailUsuario">E-mail</label>
+                    <input id="emailUsuario" placeholder="Digite o e-mail">
+                </div>
+
+                <div id="containerSenhaUsuario">
+                    <div class="campo-senha-cadastro-usuario">
+                        <input id="senhaUsuario" type="password" placeholder="Senha">
+                        <i class="fa-solid fa-eye toggle-password-cadastro-usuario"></i>
+                    </div>
+
+                    <div class="campo-senha-cadastro-usuario">
+                        <input id="confirmarSenhaUsuario" type="password" placeholder="Confirmar senha">
+                        <i class="fa-solid fa-eye toggle-password-cadastro-usuario"></i>
+                    </div>
+                </div>
+
+                <div id="avisoAlterarSenha" class="aviso-alterar-senha" style="display:none;">
+                    🔒 A senha não pode ser visualizada ou editada por motivos de segurança.<br>
+                    Caso seja necessário alterá-la, o usuário deve utilizar a opção <strong>"Esqueci minha senha"</strong> na tela de login.
+                </div>
+
+                <div class="informacoes-usuario">
+                    <p>
+                        <strong>📅 Conta criada em:</strong>
+                        <span id="dataCriacaoUsuario">-</span>
+                    </p>
+                    <div class="divisor"></div>
+                    <p>
+                        <strong>🕒 Último acesso:</strong>
+                        <span id="ultimoLoginUsuario">-</span>
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="lado-direito-editar-usuario">
+
+                <div class="campo-perfil">
+                    <span class="titulo-perfil">Perfil de acesso</span>
+
+                    <label class="perfil-card">
+                        <input
+                            type="radio"
+                            name="perfilUsuario"
+                            id="usuarioComumPerfil" value="comum"
+                            checked>
+
+                        <div class="perfil-content">
+                            <i class="fa-solid fa-user"></i>
+                            <div>
+                                <strong>Usuário Comum</strong>
+                                <small>Acesso limitado às funcionalidades do sistema.</small>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="perfil-card">
+                        <input
+                            type="radio"
+                            name="perfilUsuario"
+                            id="usuarioAdminPerfil" 
+                            value="admin">
+
+                        <div class="perfil-content">
+                            <i class="fa-solid fa-user-shield"></i>
+                            <div>
+                                <strong>Administrador</strong>
+                                <small>Acesso total às funcionalidades e configurações do sistema.</small>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="campo-status">
+                    <span class="titulo-perfil">Status da conta</span>
+
+                    <label class="status-card">
+                        <input type="radio" name="statusUsuario" value="ativo" checked>
+                        <div class="status-content">
+                            <span class="status-dot ativo"></span>
+                            <div>
+                                <strong>Ativa</strong>
+                                <small>O usuário poderá fazer login e usar o sistema normalmente.</small>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="status-card">
+                        <input type="radio" name="statusUsuario" value="inativo">
+                        <div class="status-content">
+                            <span class="status-dot inativo"></span>
+                            <div>
+                                <strong>Inativa</strong>
+                                <small>O usuário não poderá acessar o sistema.</small>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="acoes-modal-usuario">
+
+                    <button 
+                        id="button"
+                        class="btn-cancelar-usuario"
+                        onclick="fecharNovoUsuario()">
+                        Cancelar
+                    </button>
+
+                    <button
+                        id="btnAcaoModalUsuario"
+                        class="btn-salvar-usuario"
+                        onclick="salvarNovoUsuario()">
+                        Cadastrar
+                    </button>
+            
+            </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="modalListaUsuarios" class="modal-overlay">
+
+    <div class="modal-gerenciar-usuarios">
+
+        <button
+            onclick="fecharListaUsuarios()"
+            class="btn-fechar-modal-usuarios">
+            ✕
+        </button>
+
+        <h2>Gerenciamento de Usuários</h2>
+
+        <!-- BARRA SUPERIOR -->
+        <div class="usuarios-toolbar">
+
+            <input
+                type="text"
+                id="pesquisaUsuario"
+                oninput="filtrarUsuarios()"
+                placeholder="🔍 Buscar por nome, usuário ou e-mail...">
+
+            <select id="filtroStatusUsuario" onchange="carregarUsuarios()">
+
+                <option value="todos">
+                    Todos os status
+                </option>
+
+                <option value="ativos">
+                    Ativos
+                </option>
+
+                <option value="inativos">
+                    Inativos
+                </option>
+
+            </select>
+
+            <button
+                class="btn-novo-usuario-toolbar"
+                onclick="abrirNovoUsuario()">
+                + Novo Usuário
+            </button>
+
+        </div>
+
+        <!-- LISTA DE USUÁRIOS -->
+        <div id="listaUsuarios">
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="modalPerfilUsuario" class="modal-overlay">
+
+    <div class="modal-pequeno">
+
+        <h3>Perfil de acesso</h3>
+
+        <label>
+
+            <input
+                type="radio"
+                name="perfil"
+                value="usuario">
+
+            Usuário comum
+
+        </label>
+
+        <label>
+
+            <input
+                type="radio"
+                name="perfil"
+                value="admin">
+
+            Administrador
+
+        </label>
+
+        <div class="acoes-modal">
+
+            <button onclick="fecharModalPerfil()">
+                Cancelar
+            </button>
+
+            <button onclick="salvarPerfilUsuario()">
+                Salvar
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="modalPerfilAcesso" class="modal-confirmar">
+
+    <div class="box-confirmar">
+
+        <h3>🛡 Perfil de acesso</h3>
+
+        <div class="descricao-perfis">
+            <div class="perfil">
+                <h4>Administrador</h4>
+
+            <ul>
+                <li>Cadastrar novos usuários.</li>
+                <li>Editar informações de usuários.</li>
+                <li>Gerenciar permissões.</li>
+                <li>Visualizar todos os usuários cadastrados.</li>
+                <li>Utilizar todas as funcionalidades do sistema.</li>
+            </ul>
+            </div>
+            <div class="perfil">
+                <h4>Usuário comum</h4>
+
+            <ul>
+                <li>Criar e gerenciar seus próprios cards.</li>
+                <li>Editar seus próprios dados.</li>
+                <li>Alterar foto de perfil.</li>
+                <li>Exportar seu quadro em PDF.</li>
+                <li>Não possui acesso ao gerenciamento de usuários.</li>
+            </ul>
+
+        </div>
+    </div>
+
+        <div class="acoes-modal">
+
+            <button
+                class="btn-fechar-perfil"
+                onclick="fecharModalPerfil()">
+
+                Fechar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="box-confirmar" class="modal-confirmar" style="display:none;">
+
+    <div class="box-confirmar">
+
+        <h3 id="tituloConfirmacao">Confirmar ação</h3>
+
+        <p id="mensagemConfirmacao">
+            Tem certeza que deseja continuar?
+        </p>
+
+        <div class="acoes-confirmacao">
+
+            <button
+                class="btn-cancelar-confirmacao"
+                onclick="fecharConfirmacao()">
+                Cancelar
+            </button>
+
+            <button
+                id="btnConfirmarAcao"
+                class="btn-confirmar-excluir-usuario">
+                Confirmar
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
 
 {% endblock %}

@@ -1,34 +1,37 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", function () {
 
-    // 1. Olhinho da senha
-    const toggleIcons = document.querySelectorAll('.toggle-password');
+    function configurarToggleSenha(seletor){
 
-    toggleIcons.forEach(icon => {
-        icon.addEventListener('click', function() {
+        document.querySelectorAll(seletor).forEach(icon => {
 
-            const input = this.parentElement.querySelector('input');
+            icon.addEventListener("click", function(){
 
-            if (input.type === 'password') {
-                input.type = 'text';
-                this.classList.replace('fa-eye', 'fa-eye-slash');
-            } else {
-                input.type = 'password';
-                this.classList.replace('fa-eye-slash', 'fa-eye');
-            }
+                const input = this.parentElement.querySelector("input");
 
+                if(input.type === "password"){
+                    input.type = "text";
+                    this.classList.replace("fa-eye", "fa-eye-slash");
+                }else{
+                    input.type = "password";
+                    this.classList.replace("fa-eye-slash", "fa-eye");
+                }
+
+            });
+
+        });
+
+    }
+
+    configurarToggleSenha(".toggle-password");
+    configurarToggleSenha(".toggle-password-cadastro-usuario");
+
+    document.querySelectorAll(".erro-input").forEach(input => {
+        input.addEventListener("focus", function () {
+            this.classList.remove("erro-input");
         });
     });
 
-
-    // 2. Limpar erro inputs
-    document.querySelectorAll('.erro-input').forEach(input => {
-        input.addEventListener('focus', function() {
-            this.classList.remove('erro-input');
-        });
-    });
-
-
-    // 3. Toast após recarregar página (foto removida)
+    // Toast após recarregar página
     if(sessionStorage.getItem("fotoRemovida")){
 
         sessionStorage.removeItem("fotoRemovida");
@@ -49,9 +52,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 });
-
-
-
 
 // =======================
 // CROPPER FOTO

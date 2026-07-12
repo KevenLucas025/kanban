@@ -41,6 +41,14 @@ def salvar_profile(sender, instance, **kwargs):
     
     
 class Card(models.Model):
+
+    PRIORIDADES = [
+        ("normal", "Normal"),
+        ("baixa", "Baixa"),
+        ("media", "Média"),
+        ("alta", "Alta"),
+    ]
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE
@@ -49,10 +57,28 @@ class Card(models.Model):
     titulo = models.CharField(
         max_length=200
     )
-    
-    descricao = models.CharField(
+
+    descricao = models.TextField(
         blank=True,
-        null=True
+        default=""
+    )
+
+    prioridade = models.CharField(
+        max_length=10,
+        choices=PRIORIDADES,
+        default="normal"
+    )
+
+    responsavel = models.CharField(
+        max_length=100,
+        blank=True,
+        default=""
+    )
+
+    tags = models.CharField(
+        max_length=255,
+        blank=True,
+        default=""
     )
 
     coluna = models.CharField(
@@ -66,10 +92,12 @@ class Card(models.Model):
     criado_em = models.DateTimeField(
         auto_now_add=True
     )
+
     data_vencimento = models.DateField(
         null=True,
         blank=True
     )
+
     data_conclusao = models.DateField(
         null=True,
         blank=True

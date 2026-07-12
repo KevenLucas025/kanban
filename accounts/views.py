@@ -451,10 +451,6 @@ def alterar_wallpaper(request):
         })
     return JsonResponse({
         "status": "ok"
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 4b67531bc2f2230ed9650952b9dcfe1f89eaf7b8
     })
     
 @login_required
@@ -711,11 +707,6 @@ def excluir_usuario(request, id):
         return JsonResponse({
             "status": "erro",
             "msg": "Usuário não encontrado."
-<<<<<<< HEAD
+
         }, status=404)
-=======
-        }, status=404)
-=======
-    })
->>>>>>> 7d5180e22eecfa8f7fc26d5d49d0c5b118986c81
->>>>>>> 4b67531bc2f2230ed9650952b9dcfe1f89eaf7b8
+

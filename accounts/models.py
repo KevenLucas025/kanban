@@ -120,14 +120,7 @@ class Card(models.Model):
         null=True,
         blank=True
     )
-<<<<<<< HEAD
 
-=======
-<<<<<<< HEAD
-
-=======
->>>>>>> 7d5180e22eecfa8f7fc26d5d49d0c5b118986c81
->>>>>>> 4b67531bc2f2230ed9650952b9dcfe1f89eaf7b8
     data_conclusao = models.DateField(
         null=True,
         blank=True

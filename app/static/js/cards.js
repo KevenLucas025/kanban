@@ -1877,4 +1877,8 @@ function fecharConfirmacao() {
     
     // Boa prática: Reseta a variável global por segurança
     usuarioExcluirId = null; 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 4b67531bc2f2230ed9650952b9dcfe1f89eaf7b8

@@ -81,6 +81,29 @@ class Card(models.Model):
         default=""
     )
 
+    descricao = models.TextField(
+        blank=True,
+        default=""
+    )
+
+    prioridade = models.CharField(
+        max_length=10,
+        choices=PRIORIDADES,
+        default="normal"
+    )
+
+    responsavel = models.CharField(
+        max_length=100,
+        blank=True,
+        default=""
+    )
+
+    tags = models.CharField(
+        max_length=255,
+        blank=True,
+        default=""
+    )
+
     coluna = models.CharField(
         max_length=100
     )
@@ -97,7 +120,14 @@ class Card(models.Model):
         null=True,
         blank=True
     )
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+
+=======
+>>>>>>> 7d5180e22eecfa8f7fc26d5d49d0c5b118986c81
+>>>>>>> 4b67531bc2f2230ed9650952b9dcfe1f89eaf7b8
     data_conclusao = models.DateField(
         null=True,
         blank=True

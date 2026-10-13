@@ -4,9 +4,6 @@ from typing import cast
 import os
 import dj_database_url
 
-
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -29,7 +26,7 @@ SITE_NAME = 'Kanban'
 SECRET_KEY = 'django-insecure-llg7n9of+7^^8lshbhm-s4qwm-8_-ucnielt=c=lcpv=frb)=e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 ALLOWED_HOSTS = ["*"]
 

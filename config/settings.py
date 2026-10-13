@@ -154,10 +154,5 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
-    # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    # SECURE_SSL_REDIRECT = True
-    # SECURE_HSTS_SECONDS = 3600
-    
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     
     

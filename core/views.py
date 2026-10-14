@@ -47,7 +47,7 @@ def dashboard(request):
         data_vencimento__lte=hoje + timedelta(days=2)
     ).exclude(coluna="CO").count()
 
-    # ✅ Concluídos hoje
+    #  Concluídos hoje
     concluidos_hoje = cards.filter(
         coluna="CO",
         criado_em__date=hoje

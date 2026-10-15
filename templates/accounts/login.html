@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-login">
+<div class="card-login">
+
+    <!-- LADO ESQUERDO -->
+    <div class="lado-login">
+
+        <h1>Faça o seu login.</h1>
+
+        {% if messages %}
+        <div id="messages-container">
+            {% for message in messages %}
+                <p class="error-messages">
+                    {{ message }}
+                </p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="campo-login">
+                <label>Usuário</label>
+                <i class="fa-solid fa-user login"></i>
+
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Usuário ou Email"
+                    autocomplete="username">
+            </div>
+
+            <div class="campo-login">
+                <label>Senha</label>
+                <i class="fa-solid fa-lock login"></i>
+                
+
+                <div class="senha-wrapper">
+                    <input
+                        type="password"
+                        name="password"
+                        id="password"
+                        placeholder="Digite sua senha"
+                        autocomplete="current-password">
+
+                    <i class="fa-solid fa-eye toggle-password olho-login"></i>
+                </div>
+            </div>
+
+            <a class="link-senha" href="/accounts/password_reset">
+                Esqueci minha senha
+            </a>
+
+            <button type="submit">
+                Entrar
+            </button>
+        </form>
+
+        <a class="link-cadastro" href="/register/">
+            Ainda não tenho uma conta
+        </a>
+
+    </div>
+
+    <!-- LADO DIREITO -->
+    <div class="lado-imagem">
+
+        <div class="overlay"></div>
+
+        <div class="conteudo-imagem">
+            <h2>Kanban</h2>
+
+            <p>
+                Organize tarefas, acompanhe metas e aumente sua produtividade.
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+<div id="bloqueioMobile" style="display:none;">
+    <div class="conteudo-bloqueio">
+        <h2>⚠️ Versão Desktop</h2>
+
+        <p>
+            Este sistema ainda não possui suporte para dispositivos móveis.
+        </p>
+
+        <p>
+            Acesse pelo computador para utilizar todas as funcionalidades.
+        </p>
+
+        <a href="https://projetosite-z4ap.onrender.com/"
+           class="btn-voltar-site">
+            ⬅ Voltar ao site
+        </a>
+    </div>
+</div>
+</div>
+
+
+
+<script>
+
+setTimeout(function(){
+
+    const container =
+    document.getElementById("messages-container");
+
+    if(container){
+
+        container.style.transition =
+        "opacity .5s ease";
+
+        container.style.opacity = "0";
+
+        setTimeout(
+            () => container.remove(),
+            500
+        );
+    }
+
+},4000);
+
+if(window.innerWidth <= 768){
+
+    document.getElementById(
+        "bloqueioMobile"
+    ).style.display = "flex";
+
+    document.body.style.overflow = "hidden";
+}
+
+</script>
+
+{% endblock %}

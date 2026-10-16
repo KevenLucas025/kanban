@@ -9,6 +9,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / ".env")
 
+
+
 # ==================================================
 # E-MAIL - GMAIL
 # ==================================================
@@ -39,6 +41,21 @@ SUPPORT_EMAIL = os.getenv(
     "SUPPORT_EMAIL",
     "kanban.sistema@gmail.com"
 )
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+logger.warning(
+    "EMAIL CONFIG — backend=%s host=%s port=%s TLS=%s SSL=%s user=%s",
+    EMAIL_BACKEND,
+    EMAIL_HOST,
+    EMAIL_PORT,
+    EMAIL_USE_TLS,
+    EMAIL_USE_SSL,
+    EMAIL_HOST_USER,
+)
+
 
 SITE_NAME = 'Kanban'
 

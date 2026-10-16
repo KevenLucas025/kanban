@@ -17,7 +17,7 @@ load_dotenv(BASE_DIR / ".env")
 
 EMAIL_BACKEND = os.getenv(
     "EMAIL_BACKEND",
-    "django.core.mail.backends.smtp.EmailBackend"
+    "core.email_backend.GmailAPIEmailBackend"
 )
 
 EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
@@ -46,15 +46,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-logger.warning(
-    "EMAIL CONFIG — backend=%s host=%s port=%s TLS=%s SSL=%s user=%s",
-    EMAIL_BACKEND,
-    EMAIL_HOST,
-    EMAIL_PORT,
-    EMAIL_USE_TLS,
-    EMAIL_USE_SSL,
-    EMAIL_HOST_USER,
-)
 
 
 SITE_NAME = 'Kanban'

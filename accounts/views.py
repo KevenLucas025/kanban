@@ -17,6 +17,7 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.utils.timezone import now
 import json
+from django.conf import settings
 
 
 def login_view(request):
@@ -322,8 +323,8 @@ def enviar_sugestao(request):
             email_msg = EmailMultiAlternatives(
                 subject=assunto,
                 body=mensagem_html,
-                from_email="suportekanban@outlook.com",
-                to=["keven.lucas00@hotmail.com"],
+                from_email=None,
+                to=[settings.SUPPORT_EMAIL],
                 reply_to=[email],
             )
             
